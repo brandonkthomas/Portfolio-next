@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Portfolio.Web.Content.Photos;
@@ -12,7 +13,16 @@ namespace Portfolio.Web.Tests;
 public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory
-        .WithWebHostBuilder(builder => builder.UseEnvironment("Production"))
+        .WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Production");
+            builder.ConfigureAppConfiguration((_, configuration) =>
+                configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["PhotoCatalog:ManifestPath"] = Path.Combine(
+                        AppContext.BaseDirectory, "Fixtures", "empty-photos.v1.json")
+                }));
+        })
         .CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false

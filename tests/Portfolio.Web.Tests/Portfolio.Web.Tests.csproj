@@ -19,5 +19,8 @@
     <ProjectReference Include="../../src/Portfolio.Web/Portfolio.Web.csproj" />
     <Using Include="Xunit" />
   </ItemGroup>
-</Project>
 
+  <ItemGroup>
+    <Content Include="Fixtures/empty-photos.v1.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

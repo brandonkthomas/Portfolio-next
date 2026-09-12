@@ -1,0 +1,82 @@
+@page "/projects"
+@model ProjectsModel
+@* Renders server-provided project records + their optional external links *@
+@{
+    var tagIcons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        [".NET Core"] = "dotnet",
+        ["TypeScript"] = "typescript",
+        ["Three.js"] = "threejs",
+        ["CSS"] = "css",
+        ["C#"] = "c-sharp",
+        ["WPF"] = "dotnet",
+        ["Windows"] = "windows",
+        ["Shell"] = "bash",
+        ["CLI"] = "terminal"
+    };
+}
+
+<header class="page-heading">
+    <h1>Projects</h1>
+</header>
+
+<partial name="_ProjectTagSymbols" />
+
+<ol class="project-list">
+    @foreach (var project in Model.Projects)
+    {
+        <li>
+            <article class="project">
+                @* Title *@
+                @if (project.SourceUrl is not null)
+                {
+                    <h2><a href="@project.SourceUrl" rel="external" aria-label="View @project.Title on GitHub">@project.Title</a></h2>
+                }
+                else
+                {
+                    <h2>@project.Title</h2>
+                }
+                
+                @* Caption *@
+                @if (project.Meta is not null)
+                {
+                    <p class="subtitle-meta">@project.Meta</p>
+                }
+
+                @* Summary *@
+                <p>@project.Summary</p>
+
+                @* Tags (technologies) *@
+                <ul class="tag-list" aria-label="Technologies">
+                    @foreach (var tag in project.Tags)
+                    {
+                        <li>
+                            @if (tagIcons.TryGetValue(tag, out var iconName))
+                            {
+                                <svg class="tag-icon" aria-hidden="true" focusable="false">
+                                    <use href="#tag-icon-@iconName"></use>
+                                </svg>
+                            }
+                            <span>@tag</span>
+                        </li>
+                    }
+                </ul>
+
+                @* URLs / downloads *@
+                @if (project.LiveUrl is not null || project.Downloads.Count > 0)
+                {
+                    <ul class="project-links" aria-label="Links for @project.Title">
+                        @if (project.LiveUrl is not null)
+                        {
+                            <li><a href="@project.LiveUrl" rel="external" aria-label="Open @project.Title">Visit</a></li>
+                        }
+                        @foreach (var download in project.Downloads)
+                        {
+                            <li><a href="@download.Url" rel="external" aria-label="Download @project.Title for @download.Label">Download for @download.Label</a></li>
+                        }
+                    </ul>
+                }
+            </article>
+        </li>
+    }
+</ol>

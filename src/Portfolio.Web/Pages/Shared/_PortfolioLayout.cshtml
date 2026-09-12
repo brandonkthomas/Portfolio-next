@@ -1,0 +1,116 @@
+@using Portfolio.Web.Pages
+@* Renders shared portfolio navigation + page body inside base document layout *@
+@{
+    Layout = "_BaseLayout";
+    var pageModel = ViewData.Model as PortfolioPageModel
+        ?? throw new InvalidOperationException("The portfolio layout requires a portfolio page model.");
+    var activeNavigationKey = pageModel.Metadata.NavigationKey;
+}
+@section Head {
+    @* Applies a saved client-local theme before the stylesheet paints *@
+    <script src="~/assets/js/theme.js"></script>
+    <link rel="stylesheet" href="~/css/portfolio.css">
+    @* Custom fonts *@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;700&display=swap" rel="stylesheet">
+}
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="portfolio-shell">
+    <aside class="portfolio-sidebar" aria-label="Site navigation" data-sidebar>
+        <div class="sidebar-heading">
+            <a class="site-name" asp-page="/Index">
+                <img class="site-logo" src="~/assets/svg/bt-logo-boxed.svg" width="18" height="18" alt="">
+                <span>brandonthomas.net</span>
+            </a>
+            <button class="menu-button"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="portfolio-navigation"
+                    data-menu-button>
+                <span>Menu</span>
+                <span class="menu-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <div id="portfolio-navigation" class="portfolio-navigation" data-menu>
+            <nav aria-label="Portfolio">
+                @* Opts only portfolio-owned routes into enhanced navigation *@
+                <ul class="navigation-list">
+                    <li>
+                        <a asp-page="/Index"
+                           aria-current="@(activeNavigationKey == "about" ? "page" : null)"
+                           data-portfolio-link
+                           data-navigation-order="0"
+                           data-navigation-key="about">info</a>
+                        <span class="navigation-indicator" aria-hidden="true"></span>
+                    </li>
+                    <li>
+                        <a asp-page="/Projects"
+                           aria-current="@(activeNavigationKey == "projects" ? "page" : null)"
+                           data-portfolio-link
+                           data-navigation-order="1"
+                           data-navigation-key="projects">projects</a>
+                        <span class="navigation-indicator" aria-hidden="true"></span>
+                    </li>
+                    <li>
+                        <a asp-page="/Photos"
+                           aria-current="@(activeNavigationKey == "photos" ? "page" : null)"
+                           data-portfolio-link
+                           data-navigation-order="2"
+                           data-navigation-key="photos">photos</a>
+                        <span class="navigation-indicator" aria-hidden="true"></span>
+                    </li>
+                </ul>
+            </nav>
+
+            <nav aria-label="Contact">
+                <ul class="contact-list">
+                    <li>
+                        <a href="https://linkedin.com/in/brandonkthomas" rel="me external" aria-label="LinkedIn">
+                            <span>linkedin</span>
+                            <img class="external-link-icon" src="~/assets/svg/external-link-nobox.svg" width="10" height="10" alt="">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:me@brandonthomas.net" aria-label="Email">
+                            <span>email</span>
+                            <img class="external-link-icon" src="~/assets/svg/external-link-nobox.svg" width="10" height="10" alt="">
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="theme-control">
+                <button class="theme-button"
+                        type="button"
+                        aria-label="Toggle color theme"
+                        data-theme-button>
+                    <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <g class="theme-icon-sun">
+                            <circle cx="12" cy="12" r="3.25"></circle>
+                            <path d="M12 2.25v2M12 19.75v2M4.75 4.75l1.4 1.4M17.85 17.85l1.4 1.4M2.25 12h2M19.75 12h2M4.75 19.25l1.4-1.4M17.85 6.15l1.4-1.4"></path>
+                        </g>
+                        <path class="theme-icon-moon" d="M20 15.35A8.5 8.5 0 0 1 8.65 4a8.5 8.5 0 1 0 11.35 11.35Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    @* Identifies the only region replaced by enhanced navigation *@
+    <main id="main-content"
+          class="portfolio-main"
+          tabindex="-1"
+          data-portfolio-main
+          data-portfolio-view="@activeNavigationKey">
+        <div class="portfolio-view-content">
+            @RenderBody()
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    <script src="~/assets/js/navigation.js" type="module"></script>
+}

@@ -1,0 +1,21 @@
+{
+  "name": "portfolio-next",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
+  "scripts": {
+    "build:client": "tsc --project tsconfig.json",
+    "check:client": "tsc --project tsconfig.json --noEmit",
+    "check:published-assets": "node tools/verify-published-assets.mjs",
+    "check:publisher": "tsc --project tsconfig.publisher.json --noEmit",
+    "photos:build": "node tools/photo-publisher/publish.ts"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "sharp": "0.35.4",
+    "typescript": "5.9.3"
+  }
+}

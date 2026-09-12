@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+
+# Rider
+.idea/
+
+# .NET build output
+**/bin/
+**/obj/
+artifacts/
+publish/
+
+# Node dependencies / generated browser assets
+node_modules/
+src/Portfolio.Web/wwwroot/assets/js/
+
+# Local configuration
+*.user
+*.suo
+.env
+.env.*
+!.env.example
+appsettings.development.json
+src/Portfolio.Web/Properties/launchSettings.json
+
+# Public project content ships with the application. The development photo
+# manifest and source images remain private/local publication inputs.
+src/Portfolio.Web/Content/photos.v1.json
+src/Portfolio.Web/wwwroot/fixtures/photos/
+
+# Deployment topology, host provisioning, and private publisher transport live
+# in the owner's private deployment workspace. Only the generic app Dockerfile
+# belongs in this repository.
+/deploy/*
+!/deploy/Dockerfile
+/docs/

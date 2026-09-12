@@ -1,0 +1,32 @@
+@using Portfolio.Web.Pages
+@* Renders HTML document shell + page-specific metadata shared by portfolio views *@
+@{
+    var pageModel = ViewData.Model as PortfolioPageModel
+        ?? throw new InvalidOperationException("The base layout requires a portfolio page model.");
+    var metadata = pageModel.Metadata;
+}
+<!doctype html>
+@* Identifies compatible documents so enhanced navigation can fail closed across releases *@
+<html lang="en" data-portfolio-shell="portfolio" data-portfolio-shell-version="2">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>@metadata.DocumentTitle</title>
+    <meta name="description" content="@metadata.Description">
+    <link rel="canonical" href="@pageModel.CanonicalUrl">
+    <meta property="og:site_name" content="brandonthomas.net">
+    <meta property="og:type" content="@metadata.OpenGraphType">
+    <meta property="og:title" content="@metadata.DocumentTitle">
+    <meta property="og:description" content="@metadata.Description">
+    <meta property="og:url" content="@pageModel.CanonicalUrl">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="@metadata.DocumentTitle">
+    <meta name="twitter:description" content="@metadata.Description">
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body>
+    @RenderBody()
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

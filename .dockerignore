@@ -1,0 +1,13 @@
+.git
+.github
+.idea
+.DS_Store
+**/bin
+**/obj
+artifacts
+node_modules
+publish
+docs
+src/Portfolio.Web/wwwroot/assets/js
+deploy/*
+!deploy/Dockerfile

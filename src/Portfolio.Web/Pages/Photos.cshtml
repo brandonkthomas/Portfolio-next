@@ -1,0 +1,57 @@
+@page "/photos"
+@model PhotosModel
+@* Renders server-provided photo records w/ responsive image attributes *@
+
+<header class="page-heading">
+    <h1>Photos</h1>
+</header>
+
+@if (Model.Photos.Count == 0)
+{
+    <p class="empty-state">Nothing here right now. Check back later!</p>
+}
+else
+{
+    <ol class="photo-list" data-photo-list>
+        @foreach (var photo in Model.Photos)
+        {
+            var jpegVariants = photo.Variants.Where(variant => variant.MediaType == "image/jpeg").ToArray();
+            var fallbackVariants = jpegVariants.Length > 0
+                ? jpegVariants
+                : photo.Variants.GroupBy(variant => variant.MediaType).First().ToArray();
+            var largestVariant = fallbackVariants[^1];
+
+            <li>
+                <figure class="photo">
+                    <a href="@largestVariant.Url" aria-label="Open full-size photo: @photo.AltText">
+                        <picture>
+                            @foreach (var format in photo.Variants
+                                .Where(variant => variant.MediaType != largestVariant.MediaType)
+                                .GroupBy(variant => variant.MediaType))
+                            {
+                                <source type="@format.Key"
+                                        srcset="@string.Join(", ", format.Select(variant => $"{variant.Url} {variant.Width}w"))"
+                                        sizes="(min-width: 87.5rem) calc((100vw - 37rem) / 4), (min-width: 68rem) calc(8.333vw + 5.333rem), (max-width: 22rem) calc(100vw - 2rem), calc((100vw - 3rem) / 2)">
+                            }
+                            <img src="@largestVariant.Url"
+                                 srcset="@string.Join(", ", fallbackVariants.Select(variant => $"{variant.Url} {variant.Width}w"))"
+                                 sizes="(min-width: 87.5rem) calc((100vw - 37rem) / 4), (min-width: 68rem) calc(8.333vw + 5.333rem), (max-width: 22rem) calc(100vw - 2rem), calc((100vw - 3rem) / 2)"
+                                 width="@largestVariant.Width"
+                                 height="@largestVariant.Height"
+                                 alt="@photo.AltText"
+                                 loading="lazy"
+                                 decoding="async">
+                        </picture>
+                    </a>
+                    @* <figcaption> *@
+                    @*     @if (photo.Caption is not null) *@
+                    @*     { *@
+                    @*         <span>@photo.Caption</span> *@
+                    @*     } *@
+                    @*     <time datetime="@photo.PublishedAt.ToString("yyyy-MM-dd")">@photo.PublishedAt.ToString("MMMM yyyy")</time> *@
+                    @* </figcaption> *@
+                </figure>
+            </li>
+        }
+    </ol>
+}

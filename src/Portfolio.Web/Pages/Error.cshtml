@@ -1,0 +1,21 @@
+@page "/error/{statusCode:int?}"
+@model ErrorModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>@Model.Title | brandonthomas.net</title>
+</head>
+<body>
+    <main>
+        <h1>@Model.Title</h1>
+        <p>@Model.Message</p>
+        <p><a href="/">Return home</a></p>
+    </main>
+</body>
+</html>

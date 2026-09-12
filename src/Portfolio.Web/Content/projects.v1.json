@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "slug": "portfolio",
+      "title": "Portfolio (Legacy)",
+      "meta": "Apr 2025",
+      "summary": "Previous iteration of my portfolio site. Included an interactive business card/background, a project showcase grid, and a photo gallery.",
+      "order": 10,
+      "tags": [".NET Core", "TypeScript", "Three.js"],
+      "sourceUrl": "https://github.com/brandonkthomas/Portfolio"
+    },
+    {
+      "slug": "webamp",
+      "title": "WebAmp",
+      "meta": "Feb 2026",
+      "summary": "A web-based music streamer with Spotify and SoundCloud support.",
+      "order": 20,
+      "tags": [".NET Core", "TypeScript", "CSS"],
+      "sourceUrl": "https://github.com/brandonkthomas/WebAmp"
+    },
+    {
+      "slug": "localdrop",
+      "title": "LocalDrop",
+      "meta": "May 2026",
+      "summary": "A browser-based local file transfer interface with QR code pairing.",
+      "order": 30,
+      "tags": ["TypeScript"]
+    },
+    {
+      "slug": "spectrometer",
+      "title": "Spectrometer",
+      "meta": "Aug 2024",
+      "summary": "A Windows hardware monitor with sensor lists, customizable graphs, and display settings.",
+      "order": 40,
+      "tags": ["C#", "WPF", "Windows"],
+      "sourceUrl": "https://github.com/brandonkthomas/Spectrometer",
+      "downloads": [
+        {
+          "label": "Windows",
+          "url": "https://github.com/brandonkthomas/Spectrometer/releases/latest/download/Spectrometer.exe"
+        }
+      ]
+    },
+    {
+      "slug": "image-hex-editor",
+      "title": "Image Hex Editor",
+      "meta": "Dec 2025",
+      "summary": "A browser tool for inspecting and editing image bytes as hexadecimal data.",
+      "order": 50,
+      "tags": ["TypeScript", "Web"],
+      "sourceUrl": "https://github.com/brandonkthomas/ImageHexEditor"
+    },
+    {
+      "slug": "name-trace",
+      "title": "NameTrace",
+      "meta": "Dec 2025",
+      "summary": "A reverse phone lookup web application.",
+      "order": 60,
+      "tags": [".NET Core", "TypeScript"],
+      "sourceUrl": "https://github.com/brandonkthomas/NameTrace"
+    },
+    {
+      "slug": "deployment-scripts",
+      "title": "Deployment Scripts",
+      "summary": "Small shell utilities for new macOS deployments and creating bootable Windows installation media.",
+      "order": 70,
+      "tags": ["Shell", "CLI"],
+      "sourceUrl": "https://github.com/brandonkthomas/deployment-scripts"
+    }
+  ]
+}

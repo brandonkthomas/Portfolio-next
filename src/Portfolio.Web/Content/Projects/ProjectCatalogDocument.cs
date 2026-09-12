@@ -1,0 +1,60 @@
+namespace Portfolio.Web.Content.Projects;
+
+/// <summary>
+/// Versioned project JSON document consumed by the project catalog
+/// </summary>
+public sealed record ProjectCatalogDocument
+{
+    /// <summary>Gets the schema version required for safe deserialization changes.</summary>
+    public int SchemaVersion { get; init; }
+
+    /// <summary>Gets the project records validated and ordered by the catalog service.</summary>
+    public IReadOnlyList<ProjectRecord> Projects { get; init; } = [];
+}
+
+/// <summary>
+/// 1 project's content + optional destinations
+/// </summary>
+public sealed record ProjectRecord
+{
+    /// <summary>Gets the stable URL-safe project identifier.</summary>
+    public string Slug { get; init; } = string.Empty;
+
+    /// <summary>Gets the project display title.</summary>
+    public string Title { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Gets the project display caption.
+    /// </summary>
+    public string? Meta { get; init; } = string.Empty;
+
+    /// <summary>Gets the project summary supplied by the content source.</summary>
+    public string Summary { get; init; } = string.Empty;
+
+    /// <summary>Gets the explicit display order.</summary>
+    public int Order { get; init; }
+
+    /// <summary>Gets the project technology or category labels.</summary>
+    public IReadOnlyList<string> Tags { get; init; } = [];
+
+    /// <summary>Gets the optional source-code URL.</summary>
+    public string? SourceUrl { get; init; }
+
+    /// <summary>Gets the optional live project URL.</summary>
+    public string? LiveUrl { get; init; }
+
+    /// <summary>Gets optional downloadable project artifacts.</summary>
+    public IReadOnlyList<ProjectDownload> Downloads { get; init; } = [];
+}
+
+/// <summary>
+/// 1 labeled download associated with a project
+/// </summary>
+public sealed record ProjectDownload
+{
+    /// <summary>Gets the platform or artifact label shown with the link.</summary>
+    public string Label { get; init; } = string.Empty;
+
+    /// <summary>Gets the absolute download URL.</summary>
+    public string Url { get; init; } = string.Empty;
+}

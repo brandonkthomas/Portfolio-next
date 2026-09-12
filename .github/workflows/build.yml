@@ -1,0 +1,62 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build and test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Check for private deployment details
+        run: node tools/check-public-tree.mjs
+
+      - name: Restore build tools
+        run: npm ci --ignore-scripts
+
+      - name: Check TypeScript and build client assets
+        run: |
+          npm run check:client
+          npm run check:publisher
+          npm run build:client
+
+      - name: Restore .NET dependencies
+        run: dotnet restore Portfolio.slnx --locked-mode
+
+      - name: Build
+        run: dotnet build Portfolio.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test Portfolio.slnx --configuration Release --no-build
+
+      - name: Publish and verify fingerprinted assets
+        run: |
+          dotnet publish src/Portfolio.Web/Portfolio.Web.csproj \
+            --configuration Release \
+            --no-build \
+            --output "${{ runner.temp }}/portfolio-publish"
+          npm run check:published-assets -- "${{ runner.temp }}/portfolio-publish"

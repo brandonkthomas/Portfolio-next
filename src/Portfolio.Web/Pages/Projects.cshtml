@@ -68,7 +68,7 @@
                     <ul class="project-links" aria-label="Links for @project.Title">
                         @if (project.LiveUrl is not null)
                         {
-                            <li><a href="@project.LiveUrl" rel="external" aria-label="Open @project.Title">Visit</a></li>
+                            <li><a href="@project.LiveUrl" rel="@(project.LiveUrl.StartsWith('/') ? null : "external")" aria-label="Open @project.Title">Visit</a></li>
                         }
                         @foreach (var download in project.Downloads)
                         {

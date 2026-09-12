@@ -5,6 +5,44 @@ namespace Portfolio.Web.Tests;
 
 public sealed class CatalogValidationTests
 {
+    [Theory]
+    [InlineData("/projects/webamp")]
+    [InlineData("/webamp/")]
+    [InlineData("https://example.com/demo")]
+    public void Project_catalog_accepts_optional_local_or_external_demo_url(string liveUrl)
+    {
+        var catalogPath = CreateProjectCatalog(liveUrl);
+        try
+        {
+            var project = Assert.Single(JsonProjectCatalog.Load(catalogPath).Projects);
+            Assert.Equal(liveUrl, project.LiveUrl);
+            Assert.Null(project.SourceUrl);
+        }
+        finally
+        {
+            File.Delete(catalogPath);
+        }
+    }
+
+    [Theory]
+    [InlineData("//evil.example/demo")]
+    [InlineData("/projects/../admin")]
+    [InlineData("/projects/webamp?redirect=evil")]
+    [InlineData("/projects/%2e%2e/admin")]
+    [InlineData("javascript:alert(1)")]
+    public void Project_catalog_rejects_unsafe_demo_url(string liveUrl)
+    {
+        var catalogPath = CreateProjectCatalog(liveUrl);
+        try
+        {
+            Assert.Throws<CatalogValidationException>(() => JsonProjectCatalog.Load(catalogPath));
+        }
+        finally
+        {
+            File.Delete(catalogPath);
+        }
+    }
+
     [Fact]
     public void Project_catalog_rejects_duplicate_slugs()
     {
@@ -92,4 +130,21 @@ public sealed class CatalogValidationTests
         File.WriteAllText(path, contents);
         return path;
     }
+
+    private static string CreateProjectCatalog(string liveUrl) => CreateTemporaryFile(
+        $$"""
+        {
+          "schemaVersion": 1,
+          "projects": [
+            {
+              "slug": "webamp",
+              "title": "WebAmp",
+              "summary": "A demo.",
+              "order": 1,
+              "tags": ["Web"],
+              "liveUrl": "{{liveUrl}}"
+            }
+          ]
+        }
+        """);
 }

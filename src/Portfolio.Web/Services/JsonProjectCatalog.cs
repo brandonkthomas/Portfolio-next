@@ -94,7 +94,7 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
             }
 
             ValidateOptionalHttpUrl(project.SourceUrl, $"Project '{label}' sourceUrl", errors);
-            ValidateOptionalHttpUrl(project.LiveUrl, $"Project '{label}' liveUrl", errors);
+            ValidateOptionalLiveUrl(project.LiveUrl, $"Project '{label}' liveUrl", errors);
 
             foreach (var download in project.Downloads)
             {
@@ -139,7 +139,27 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
         }
     }
 
+    /// <summary>Allows a public HTTP(S) destination or a simple path on this site.</summary>
+    private static void ValidateOptionalLiveUrl(string? value, string label, ICollection<string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        if (value.StartsWith('/') && LocalDemoPathPattern().IsMatch(value))
+        {
+            return;
+        }
+
+        ValidateOptionalHttpUrl(value, label, errors);
+    }
+
     /// <summary>Provides the compiled pattern used to enforce stable URL-safe project slugs.</summary>
     [GeneratedRegex("^[a-z0-9]+(?:-[a-z0-9]+)*$", RegexOptions.CultureInvariant)]
     private static partial Regex SlugPattern();
+
+    // No protocol-relative URL, query, fragment, backslash, dot segment, or encoded redirect.
+    [GeneratedRegex("^/[a-z0-9]+(?:[-_][a-z0-9]+)*(?:/[a-z0-9]+(?:[-_][a-z0-9]+)*)*/?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex LocalDemoPathPattern();
 }

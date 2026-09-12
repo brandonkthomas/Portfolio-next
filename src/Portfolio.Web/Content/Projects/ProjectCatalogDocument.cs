@@ -40,7 +40,7 @@ public sealed record ProjectRecord
     /// <summary>Gets the optional source-code URL.</summary>
     public string? SourceUrl { get; init; }
 
-    /// <summary>Gets the optional live project URL.</summary>
+    /// <summary>Gets an optional live URL, including a site-relative demo path.</summary>
     public string? LiveUrl { get; init; }
 
     /// <summary>Gets optional downloadable project artifacts.</summary>

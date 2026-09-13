@@ -178,6 +178,32 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         }
     }
 
+    [Theory]
+    [InlineData("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36", null, true)]
+    [InlineData("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0", null, true)]
+    [InlineData("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Safari/605.1.15", null, false)]
+    [InlineData("Mozilla/5.0 (Linux; Android 16; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Mobile Safari/537.36", null, false)]
+    [InlineData("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36", "\"Windows\"", true)]
+    [InlineData("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36", "\"macOS\"", false)]
+    [InlineData("", null, false)]
+    public async Task Windows_download_is_offered_only_to_windows_clients(string userAgent, string? platformHint, bool expected)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/projects");
+        request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+        if (platformHint is not null)
+        {
+            request.Headers.TryAddWithoutValidation("Sec-CH-UA-Platform", platformHint);
+        }
+
+        using var response = await _client.SendAsync(request);
+        var html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(expected, html.Contains("Download Spectrometer for Windows", StringComparison.Ordinal));
+        Assert.Contains("User-Agent", response.Headers.Vary);
+        Assert.Contains("Sec-CH-UA-Platform", response.Headers.Vary);
+    }
+
     private static int CountOccurrences(string value, string expected)
     {
         var count = 0;

@@ -103,6 +103,11 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
             {
                 ValidateText(download.Label, 80, $"Project '{label}' download label", errors);
                 ValidateOptionalHttpUrl(download.Url, $"Project '{label}' download URL", errors, required: true);
+
+                if (download.Platform is not null && !ProjectDownload.SupportedPlatforms.Contains(download.Platform))
+                {
+                    errors.Add($"Project '{label}' download platform '{download.Platform}' must be windows, macos, or linux.");
+                }
             }
         }
 

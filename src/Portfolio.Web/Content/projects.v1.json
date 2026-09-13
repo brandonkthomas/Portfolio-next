@@ -60,7 +60,8 @@
       "downloads": [
         {
           "label": "Windows",
-          "url": "https://github.com/brandonkthomas/Spectrometer/releases/latest/download/Spectrometer.exe"
+          "url": "https://github.com/brandonkthomas/Spectrometer/releases/latest/download/Spectrometer.exe",
+          "platform": "windows"
         }
       ]
     },

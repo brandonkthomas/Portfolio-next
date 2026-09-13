@@ -82,6 +82,52 @@ public sealed class CatalogValidationTests
         }
     }
 
+    [Theory]
+    [InlineData("windows", true)]
+    [InlineData("linux", true)]
+    [InlineData("Windows", false)]
+    [InlineData("android", false)]
+    public void Project_catalog_validates_download_platforms(string platform, bool valid)
+    {
+        var catalogPath = CreateTemporaryFile(
+            $$"""
+            {
+              "schemaVersion": 1,
+              "projects": [
+                {
+                  "slug": "tool",
+                  "title": "Tool",
+                  "summary": "A tool.",
+                  "order": 1,
+                  "tags": ["Windows"],
+                  "downloads": [
+                    { "label": "Installer", "url": "https://example.com/tool.exe", "platform": "{{platform}}" }
+                  ]
+                }
+              ]
+            }
+            """);
+
+        try
+        {
+            if (valid)
+            {
+                var download = Assert.Single(Assert.Single(JsonProjectCatalog.Load(catalogPath, AppContext.BaseDirectory).Projects).Downloads);
+                Assert.Equal(platform, download.Platform);
+            }
+            else
+            {
+                var exception = Assert.Throws<CatalogValidationException>(() =>
+                    JsonProjectCatalog.Load(catalogPath, AppContext.BaseDirectory));
+                Assert.Contains("download platform", exception.Message, StringComparison.Ordinal);
+            }
+        }
+        finally
+        {
+            File.Delete(catalogPath);
+        }
+    }
+
     [Fact]
     public void Project_catalog_accepts_an_existing_icon_asset()
     {

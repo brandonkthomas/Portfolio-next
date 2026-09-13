@@ -13,8 +13,10 @@ header.page-heading h1 {
 /* ================================================================= */
 /* Entry titles and metadata */
 article.project h2,
-div.work-container div.work-item h4.work-title {
+div.work-container div.work-item h3.work-title {
     margin-block: 0.5rem;
+    /* Keeps the size these titles had as h4 */
+    font-size: 1em;
     color: var(--text-primary);
 }
 

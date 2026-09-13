@@ -11,22 +11,32 @@ div.portfolio-shell::before {
     position: fixed;
     z-index: 1;
     inset: 0;
-    background: rgb(0 0 0 / 0.08);
-    opacity: 0;
     pointer-events: none;
-    -webkit-backdrop-filter: blur(0);
-    backdrop-filter: blur(0);
-    transition:
-        opacity 0.18s ease,
-        -webkit-backdrop-filter 0.18s ease,
-        backdrop-filter 0.18s ease;
 }
 
+/* Transparent tap target that closes the open menu */
 div.portfolio-shell:has(div.portfolio-navigation[data-open="true"])::before {
-    opacity: 1;
     pointer-events: auto;
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px) grayscale(50%);
+}
+
+/* The open-menu backdrop is painted by the page itself, not a fixed overlay: iOS Safari clips fixed layers above
+   its floating toolbar, and View Transition snapshots drop backdrop-filter. The body background supplies the dim
+   (Safari also paints it under its toolbar); main's own filter supplies blur, grayscale, and the matching dim.
+   The sidebar and menu panel paint their own background, so they stay undimmed. */
+body {
+    transition: background-color 0.18s ease;
+}
+
+main.portfolio-main {
+    transition: filter 0.18s ease;
+}
+
+body:has(div.portfolio-navigation[data-open="true"]) {
+    background-color: color-mix(in srgb, var(--bg-primary), black 8%);
+}
+
+div.portfolio-shell:has(div.portfolio-navigation[data-open="true"]) main.portfolio-main {
+    filter: blur(6px) grayscale(50%) brightness(0.92);
 }
 
 /* ================================================================= */
@@ -60,10 +70,39 @@ button.menu-button {
     cursor: pointer;
 }
 
+/* Two lines that rotate into an X while the menu is open, matching the legacy navbar icon */
 span.menu-icon {
+    position: relative;
     inline-size: 1.25rem;
-    block-size: 0.75rem;
-    border-block: 2px solid currentColor;
+    block-size: 1.25rem;
+}
+
+span.menu-icon::before,
+span.menu-icon::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(50% - 1px);
+    block-size: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.2s ease;
+}
+
+span.menu-icon::before {
+    transform: translateY(-4px);
+}
+
+span.menu-icon::after {
+    transform: translateY(4px);
+}
+
+button.menu-button[aria-expanded="true"] span.menu-icon::before {
+    transform: rotate(45deg);
+}
+
+button.menu-button[aria-expanded="true"] span.menu-icon::after {
+    transform: rotate(-45deg);
 }
 
 /* ================================================================= */
@@ -312,9 +351,12 @@ main.portfolio-main:focus {
 /* ================================================================= */
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-    div.portfolio-shell::before,
+    body,
+    main.portfolio-main,
     div.portfolio-navigation,
-    aside.portfolio-sidebar a {
+    aside.portfolio-sidebar a,
+    span.menu-icon::before,
+    span.menu-icon::after {
         transition-duration: 0.01ms;
     }
 }

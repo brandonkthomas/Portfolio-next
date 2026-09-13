@@ -1,3 +1,5 @@
+using Portfolio.Web.Models;
+
 namespace Portfolio.Web.Content.Projects;
 
 /// <summary>
@@ -72,4 +74,25 @@ public sealed record ProjectDownload
 
     /// <summary>Gets the absolute download URL.</summary>
     public string Url { get; init; } = string.Empty;
+
+    /// <summary>Gets the optional platform (windows, macos, linux); a download without one is offered to every client.</summary>
+    public string? Platform { get; init; }
+
+    /// <summary>Gets the platform tokens accepted in catalog JSON.</summary>
+    public static IReadOnlySet<string> SupportedPlatforms { get; } = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "windows",
+        "macos",
+        "linux"
+    };
+
+    /// <summary>Returns whether this download should be offered to a client on the given platform.</summary>
+    public bool IsAvailableOn(ClientPlatform platform) => Platform switch
+    {
+        null => true,
+        "windows" => platform == ClientPlatform.Windows,
+        "macos" => platform == ClientPlatform.MacOS,
+        "linux" => platform == ClientPlatform.Linux,
+        _ => false
+    };
 }

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Portfolio.Web.Configuration;
 using Portfolio.Web.Content.Projects;
 using Portfolio.Web.Models;
@@ -18,6 +19,13 @@ public sealed class ProjectsModel(
     /// <summary>Gets the ordered projects rendered by the view.</summary>
     public IReadOnlyList<ProjectRecord> Projects { get; private set; } = [];
 
+    /// <summary>Gets the requesting client's platform, detected once per request.</summary>
+    public ClientPlatform ClientPlatform { get; private set; }
+
+    /// <summary>Returns the downloads offered to this request's platform, so the view never inspects the request.</summary>
+    public IReadOnlyList<ProjectDownload> GetDownloads(ProjectRecord project) =>
+        project.Downloads.Where(download => download.IsAvailableOn(ClientPlatform)).ToArray();
+
     /// <summary>Loads the project catalog and prepares metadata for server-side rendering.</summary>
     public void OnGet()
     {
@@ -27,5 +35,9 @@ public sealed class ProjectsModel(
             Description: "Brandon Thomas",
             CanonicalPath: "/projects"));
         Projects = projectCatalog.Projects;
+
+        // The download list varies by platform. Portfolio HTML is never shared-cached, but Vary keeps any cache honest.
+        ClientPlatform = ClientPlatformDetector.Detect(Request);
+        Response.Headers.Append(HeaderNames.Vary, ClientPlatformDetector.VaryHeaders);
     }
 }

@@ -255,6 +255,40 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         Assert.True(unsupported.Length == 0, $"{path} renders characters outside the font subset: {string.Join(", ", unsupported)}");
     }
 
+    [Fact]
+    public async Task Document_advertises_hsts_and_a_fingerprinted_open_graph_image()
+    {
+        using var response = await _client.GetAsync("/projects");
+        var html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal("max-age=31536000", GetHeader(response, "Strict-Transport-Security"));
+        Assert.Contains("<meta name=\"twitter:card\" content=\"summary_large_image\">", html, StringComparison.Ordinal);
+        var image = Regex.Match(html, "<meta property=\"og:image\" content=\"https://brandonthomas\\.net(?<path>/assets/webp/opengraph\\.[a-z0-9]+\\.webp)\">");
+        Assert.True(image.Success, "The document did not advertise an absolute fingerprinted og:image.");
+        Assert.Contains($"<meta name=\"twitter:image\" content=\"https://brandonthomas.net{image.Groups["path"].Value}\">", html, StringComparison.Ordinal);
+
+        using var imageResponse = await _client.GetAsync(image.Groups["path"].Value);
+        Assert.Equal(HttpStatusCode.OK, imageResponse.StatusCode);
+        Assert.Equal("image/webp", imageResponse.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Sitemap_and_robots_are_published()
+    {
+        using var sitemap = await _client.GetAsync("/sitemap.xml");
+        var xml = await sitemap.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, sitemap.StatusCode);
+        Assert.Equal("application/xml", sitemap.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(3, CountOccurrences(xml, "<loc>"));
+        foreach (var url in new[] { "https://brandonthomas.net/", "https://brandonthomas.net/projects", "https://brandonthomas.net/photos" })
+        {
+            Assert.Contains($"<loc>{url}</loc>", xml, StringComparison.Ordinal);
+        }
+
+        var robots = await _client.GetStringAsync("/robots.txt");
+        Assert.Contains("Sitemap: https://brandonthomas.net/sitemap.xml", robots, StringComparison.Ordinal);
+    }
+
     private static int CountOccurrences(string value, string expected)
     {
         var count = 0;

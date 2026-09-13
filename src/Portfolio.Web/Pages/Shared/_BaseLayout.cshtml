@@ -4,6 +4,11 @@
     var pageModel = ViewData.Model as PortfolioPageModel
         ?? throw new InvalidOperationException("The base layout requires a portfolio page model.");
     var metadata = pageModel.Metadata;
+    // Social crawlers require an absolute image URL; the fingerprinted path keeps it immutable at the edge
+    var staticAssets = ViewContext.HttpContext.GetEndpoint()?.Metadata
+        .GetMetadata<Microsoft.AspNetCore.Components.ResourceAssetCollection>();
+    var openGraphImagePath = staticAssets?["assets/webp/opengraph.webp"] ?? "assets/webp/opengraph.webp";
+    var openGraphImage = new Uri(pageModel.CanonicalUrl, "/" + openGraphImagePath.TrimStart('/'));
 }
 <!doctype html>
 @* Identifies compatible documents so enhanced navigation can fail closed across releases *@
@@ -20,9 +25,15 @@
     <meta property="og:title" content="@metadata.DocumentTitle">
     <meta property="og:description" content="@metadata.Description">
     <meta property="og:url" content="@pageModel.CanonicalUrl">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="@openGraphImage">
+    <meta property="og:image:type" content="image/webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="brandonthomas.net">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@metadata.DocumentTitle">
     <meta name="twitter:description" content="@metadata.Description">
+    <meta name="twitter:image" content="@openGraphImage">
     <link rel="icon" href="~/favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="~/apple-touch-icon.png">
     @await RenderSectionAsync("Head", required: false)

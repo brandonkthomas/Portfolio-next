@@ -58,6 +58,8 @@ public sealed class PortfolioResponsePolicyMiddleware(RequestDelegate next)
         response.Headers[HeaderNames.ContentSecurityPolicy] = ContentSecurityPolicy;
         response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
         response.Headers[HeaderNames.XFrameOptions] = "DENY";
+        // Browsers honor HSTS only over HTTPS, which Cloudflare terminates; includeSubDomains is left to the zone setting
+        response.Headers[HeaderNames.StrictTransportSecurity] = "max-age=31536000";
         response.Headers["Permissions-Policy"] = "camera=(), geolocation=(), microphone=(), payment=(), usb=()";
     }
 

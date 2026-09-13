@@ -115,6 +115,17 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = registration => registration.Tags.Contains("ready")
 });
+app.MapGet("/sitemap.xml", (IOptions<PortfolioOptions> options, HttpResponse response) =>
+{
+    // Lists only the portfolio-owned document routes; independent project apps publish their own
+    var baseUri = new Uri(options.Value.PublicBaseUrl);
+    var urls = string.Concat(new[] { "/", "/projects", "/photos" }
+        .Select(path => $"  <url><loc>{System.Security.SecurityElement.Escape(new Uri(baseUri, path).AbsoluteUri)}</loc></url>\n"));
+    response.Headers.CacheControl = "public, max-age=3600";
+    return Results.Text(
+        $"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n{urls}</urlset>\n",
+        "application/xml; charset=utf-8");
+});
 app.MapRazorPages().WithStaticAssets();
 
 app.Run();

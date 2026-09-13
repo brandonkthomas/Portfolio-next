@@ -6,6 +6,12 @@
     box-sizing: border-box;
 }
 
+/* Disables iOS Safari double-tap-to-zoom site-wide so rapid taps on controls register as taps.
+   Effective touch-action intersects ancestors, so this covers the top-layer lightbox; pinch zoom is kept. */
+:root {
+    touch-action: manipulation;
+}
+
 body {
     margin: 0;
     background: var(--bg-primary);

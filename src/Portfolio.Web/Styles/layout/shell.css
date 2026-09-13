@@ -68,8 +68,6 @@ button.menu-button {
     border: 0;
     background: transparent;
     cursor: pointer;
-    /* Disables double-tap-to-zoom so rapid taps toggle the menu instead of zooming the page */
-    touch-action: manipulation;
 }
 
 /* Two lines that rotate into an X while the menu is open, matching the legacy navbar icon */
@@ -209,7 +207,6 @@ div.theme-control {
 }
 
 button.theme-button {
-    touch-action: manipulation;
     display: grid;
     inline-size: 2.75rem;
     block-size: 2.75rem;

@@ -10,4 +10,8 @@
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\png\" />
+  </ItemGroup>
 </Project>

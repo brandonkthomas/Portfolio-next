@@ -1,0 +1,10 @@
+/* Stylesheet entry: imports are the cascade order and are inlined into wwwroot/css/portfolio.css by tools/build-client.mjs */
+@import "./foundation/theme.css";
+@import "./foundation/base.css";
+@import "./layout/shell.css";
+@import "./layout/view-transitions.css";
+@import "./views/page.css";
+@import "./views/info.css";
+@import "./views/projects.css";
+@import "./views/photos.css";
+@import "./components/lightbox.css";

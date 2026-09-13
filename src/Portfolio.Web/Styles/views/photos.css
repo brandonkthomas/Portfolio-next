@@ -1,0 +1,103 @@
+/* Photos view grid and loading placeholders */
+
+/* ================================================================= */
+/* Photo gallery */
+ol.photo-list {
+    --photo-column-count: 2;
+    --photo-grid-gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--photo-grid-gap);
+}
+
+@supports (display: grid-lanes) {
+    ol.photo-list {
+        display: grid-lanes;
+    }
+}
+
+ol.photo-list[data-masonry="true"] {
+    position: relative;
+    display: block;
+}
+
+ol.photo-list[data-masonry="true"] > li {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: var(--photo-item-width);
+    transform: translate3d(var(--photo-x), var(--photo-y), 0);
+}
+
+figure.photo {
+    margin: 0;
+}
+
+figure.photo img {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+}
+
+/*figure.photo figcaption {*/
+/*    margin-block-start: 0.5rem;*/
+/*}*/
+
+/* The placeholder fills the box the img width/height attributes
+    already reserve, so it needs no measurement */
+figure.photo a {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+    -webkit-touch-callout: none;
+}
+
+/* ================================================================= */
+/* Photo loading state */
+/* Loading shimmer: the pseudo-element exists only until JavaScript
+    marks the photo loaded */
+figure.photo a:not([data-loaded])::before,
+div.lightbox-frame:not([data-loaded], [data-preview])::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--text-primary) 9%, transparent), transparent);
+    transform: translateX(-100%);
+}
+
+/* Transform-only, so the sweep runs on the compositor without
+    repainting. Without scripting nothing would ever mark photos loaded,
+    so the tint stays static instead of animating beneath loaded images. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    figure.photo a:not([data-loaded])::before,
+    div.lightbox-frame:not([data-loaded], [data-preview])::before {
+        animation: photo-loading 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes photo-loading {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+/* ================================================================= */
+/* Desktop photo columns */
+@media (min-width: 68rem) {
+    ol.photo-list {
+        --photo-column-count: 4;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* ================================================================= */
+/* Narrow screens */
+@media (max-width: 22rem) {
+    ol.photo-list {
+        --photo-column-count: 1;
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

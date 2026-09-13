@@ -1,0 +1,36 @@
+/* Color tokens and explicit theme overrides */
+
+/* ================================================================= */
+/* Theme */
+:root {
+    color-scheme: light dark;
+    font-family: "Mukta Malar", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    --bg-primary: light-dark(#f7f8f7, #141311);
+    --text-primary: light-dark(#171a18, #eef2ef);
+    --text-secondary: light-dark(#797570, #bec6c0);
+    --text-muted: light-dark(#6a726d, #969f98);
+    --border-color: light-dark(#d8ddd9, #343b36);
+    --icon-filter: none;
+    --portfolio-view-duration: 0.22s;
+    --portfolio-view-exit-duration: 0.16s;
+    --portfolio-view-easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --icon-filter: invert(1);
+    }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --icon-filter: invert(1);
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+    --icon-filter: none;
+}

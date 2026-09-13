@@ -1,0 +1,24 @@
+/* Headings and entry metadata shared by content views */
+
+/* ================================================================= */
+/* Page headings */
+header.page-heading {
+    margin-block-end: 2rem;
+}
+
+header.page-heading h1 {
+    font-size: 1.75rem;
+}
+
+/* ================================================================= */
+/* Entry titles and metadata */
+article.project h2,
+div.work-container div.work-item h4.work-title {
+    margin-block: 0.5rem;
+    color: var(--text-primary);
+}
+
+p.subtitle-meta {
+    margin-block-start: 0.5rem;
+    color: var(--text-muted);
+}

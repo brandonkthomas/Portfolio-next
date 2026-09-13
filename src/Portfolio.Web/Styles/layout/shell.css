@@ -1,0 +1,315 @@
+/* Portfolio shell: sidebar, mobile menu, navigation, theme control, and main region */
+
+/* ================================================================= */
+/* Portfolio shell and navigation */
+div.portfolio-shell {
+    min-block-size: 100vh;
+}
+
+div.portfolio-shell::before {
+    content: "";
+    position: fixed;
+    z-index: 1;
+    inset: 0;
+    background: rgb(0 0 0 / 0.08);
+    opacity: 0;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(0);
+    backdrop-filter: blur(0);
+    transition:
+        opacity 0.18s ease,
+        -webkit-backdrop-filter 0.18s ease,
+        backdrop-filter 0.18s ease;
+}
+
+div.portfolio-shell:has(div.portfolio-navigation[data-open="true"])::before {
+    opacity: 1;
+    pointer-events: auto;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px) grayscale(50%);
+}
+
+/* ================================================================= */
+/* Sidebar */
+aside.portfolio-sidebar {
+    position: sticky;
+    z-index: 2;
+    inset-block-start: 0;
+    padding: 1rem;
+    border-block-end: 1px solid var(--border-color);
+    background: var(--bg-primary);
+}
+
+/* ================================================================= */
+/* Sidebar heading and menu */
+div.sidebar-heading,
+button.menu-button {
+    display: flex;
+    align-items: center;
+}
+
+div.sidebar-heading {
+    justify-content: space-between;
+}
+
+button.menu-button {
+    gap: 0.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+span.menu-icon {
+    inline-size: 1.25rem;
+    block-size: 0.75rem;
+    border-block: 2px solid currentColor;
+}
+
+/* ================================================================= */
+/* Mobile navigation panel */
+div.portfolio-navigation {
+    position: absolute;
+    inset: 100% 0 auto;
+    padding: 1rem;
+    border-block-end: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-0.25rem);
+    transition:
+        opacity 0.16s ease,
+        transform 0.16s ease,
+        visibility 0s linear 0.16s;
+}
+
+div.portfolio-navigation[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    transition-delay: 0s;
+}
+
+/* ================================================================= */
+/* Sidebar links and branding */
+aside.portfolio-sidebar a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+aside.portfolio-sidebar a:hover,
+aside.portfolio-sidebar a.site-name {
+    color: var(--text-primary);
+}
+
+aside.portfolio-sidebar a.site-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+}
+
+aside.portfolio-sidebar a.site-name:hover {
+    color: var(--text-secondary);
+}
+
+img.site-logo,
+img.external-link-icon,
+img.project-icon.monochrome-icon {
+    filter: var(--icon-filter);
+}
+
+/* ================================================================= */
+/* Navigation and contact lists */
+ul.navigation-list,
+ul.contact-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+ul.navigation-list {
+    position: relative;
+}
+
+span.navigation-indicator {
+    display: none;
+}
+
+ul.navigation-list a {
+    font-weight: 400;
+}
+
+ul.contact-list {
+    margin-block-start: 1rem;
+}
+
+ul.contact-list a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+}
+
+img.external-link-icon {
+    flex: none;
+}
+
+ul.navigation-list a[aria-current="page"] {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+/* ================================================================= */
+/* Theme control icon button */
+div.theme-control {
+    margin-block-start: 0.5rem;
+}
+
+button.theme-button {
+    display: grid;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    place-items: center start;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+svg.theme-icon {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+}
+
+.theme-icon-moon {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .theme-icon-sun {
+        display: none;
+    }
+
+    :root:not([data-theme]) .theme-icon-moon {
+        display: block;
+    }
+}
+
+:root[data-theme="dark"] .theme-icon-moon {
+    display: block;
+}
+
+:root[data-theme="dark"] .theme-icon-sun {
+    display: none;
+}
+
+/* ================================================================= */
+/* Page content */
+main.portfolio-main {
+    inline-size: calc(100% - 2rem);
+    margin-inline: auto;
+    padding-block: 2rem;
+}
+
+div.portfolio-view-content {
+    inline-size: min(100%, 42.5rem);
+    margin-inline: auto;
+}
+
+main.portfolio-main[data-portfolio-view="photos"] div.portfolio-view-content {
+    inline-size: 100%;
+}
+
+/* ================================================================= */
+/* Main region focus */
+main.portfolio-main:focus {
+    outline: none;
+}
+
+/* ================================================================= */
+/* Desktop shell */
+@media (min-width: 68rem) {
+    :root {
+        --portfolio-sidebar-width: min(15rem, calc((100vw - 42.5rem) / 3));
+    }
+
+    aside.portfolio-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        display: flex;
+        flex-direction: column;
+        inline-size: var(--portfolio-sidebar-width);
+        padding: 2rem;
+        border: 0;
+    }
+
+    div.sidebar-heading {
+        display: block;
+    }
+
+    button.menu-button {
+        display: none;
+    }
+
+    div.portfolio-navigation {
+        position: static;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 2rem 0 0;
+        border: 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
+        transition: none;
+    }
+
+    ul.navigation-list {
+        padding-inline-start: 1rem;
+    }
+
+    ul.navigation-list > li {
+        position: relative;
+    }
+
+    ul.navigation-list a[aria-current="page"] + span.navigation-indicator {
+        display: block;
+        position: absolute;
+        inset-block-start: 0.1875rem;
+        inset-inline-start: -1rem;
+        inline-size: 2px;
+        block-size: 1.125rem;
+        background: var(--text-primary);
+    }
+
+    div.portfolio-navigation nav[aria-label="Contact"] {
+        margin-block-start: auto;
+    }
+
+    ul.contact-list {
+        margin-block-start: 0;
+    }
+
+    main.portfolio-main {
+        inline-size: calc(100% - var(--portfolio-sidebar-width) - var(--portfolio-sidebar-width) - 4rem);
+        padding-block: 5rem;
+    }
+}
+
+/* ================================================================= */
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    div.portfolio-shell::before,
+    div.portfolio-navigation,
+    aside.portfolio-sidebar a {
+        transition-duration: 0.01ms;
+    }
+}

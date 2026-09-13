@@ -1,0 +1,126 @@
+/* Theme and portfolio navigation View Transitions */
+
+/* ================================================================= */
+/* Theme view transition */
+html[data-theme-transition]::view-transition-image-pair(root) {
+    isolation: auto;
+}
+
+html[data-theme-transition]::view-transition-group(root) {
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+}
+
+html[data-theme-transition]::view-transition-old(root) {
+    z-index: 1;
+    mix-blend-mode: normal;
+    animation: theme-fade-out 0.2s ease-out both;
+}
+
+html[data-theme-transition]::view-transition-new(root) {
+    z-index: 0;
+    mix-blend-mode: normal;
+    animation: none;
+}
+
+@keyframes theme-fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+/* ================================================================= */
+/* Portfolio view transitions */
+html[data-portfolio-transition]::view-transition-old(root),
+html[data-portfolio-transition]::view-transition-new(root) {
+    mix-blend-mode: normal;
+}
+
+html[data-portfolio-transition] aside.portfolio-sidebar {
+    view-transition-name: portfolio-chrome;
+}
+
+html[data-portfolio-transition]::view-transition-group(root),
+html[data-portfolio-transition]::view-transition-group(portfolio-navigation-indicator) {
+    animation-duration: var(--portfolio-view-duration);
+    animation-timing-function: var(--portfolio-view-easing);
+}
+
+html[data-portfolio-transition]::view-transition-group(portfolio-chrome) {
+    animation: none;
+}
+
+html[data-portfolio-transition]::view-transition-old(portfolio-chrome),
+html[data-portfolio-transition]::view-transition-new(portfolio-chrome),
+html[data-portfolio-transition]::view-transition-old(portfolio-navigation-indicator),
+html[data-portfolio-transition]::view-transition-new(portfolio-navigation-indicator) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+html[data-portfolio-transition]::view-transition-new(portfolio-navigation-indicator) {
+    opacity: 0;
+}
+
+/* The chrome never animates, so only the live new snapshot is needed.
+    The old snapshot would freeze a closing mobile menu mid-fade and
+    show it through the fading live menu until the transition ends. */
+html[data-portfolio-transition]::view-transition-old(portfolio-chrome) {
+    display: none;
+}
+
+html[data-portfolio-transition="forward"]::view-transition-old(root) {
+    animation: portfolio-view-exit-up var(--portfolio-view-exit-duration) var(--portfolio-view-easing) both;
+}
+
+html[data-portfolio-transition="forward"]::view-transition-new(root) {
+    animation: portfolio-view-enter-up var(--portfolio-view-duration) var(--portfolio-view-easing) both;
+}
+
+html[data-portfolio-transition="backward"]::view-transition-old(root) {
+    animation: portfolio-view-exit-down var(--portfolio-view-exit-duration) var(--portfolio-view-easing) both;
+}
+
+html[data-portfolio-transition="backward"]::view-transition-new(root) {
+    animation: portfolio-view-enter-down var(--portfolio-view-duration) var(--portfolio-view-easing) both;
+}
+
+@keyframes portfolio-view-exit-up {
+    to {
+        opacity: 0;
+        filter: blur(4px);
+        translate: 0 -0.75rem;
+    }
+}
+
+@keyframes portfolio-view-enter-up {
+    from {
+        opacity: 0;
+        filter: blur(5px);
+        translate: 0 1rem;
+    }
+}
+
+@keyframes portfolio-view-exit-down {
+    to {
+        opacity: 0;
+        filter: blur(4px);
+        translate: 0 0.75rem;
+    }
+}
+
+@keyframes portfolio-view-enter-down {
+    from {
+        opacity: 0;
+        filter: blur(5px);
+        translate: 0 -1rem;
+    }
+}
+
+/* ================================================================= */
+/* Desktop navigation indicator */
+@media (min-width: 68rem) {
+    html[data-portfolio-transition] ul.navigation-list a[aria-current="page"] + span.navigation-indicator {
+        view-transition-name: portfolio-navigation-indicator;
+    }
+}

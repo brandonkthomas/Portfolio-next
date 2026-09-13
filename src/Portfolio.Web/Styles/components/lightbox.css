@@ -1,0 +1,255 @@
+/* Photo lightbox dialog, carousel, and controls */
+
+/* ================================================================= */
+/* Photo lightbox */
+:root[data-lightbox-open] {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+}
+
+dialog.photo-lightbox {
+    --lightbox-shift: 0;
+    --lightbox-drag-x: 0px;
+    --lightbox-dismiss-y: 0px;
+    --lightbox-dismiss: 0;
+    --lightbox-duration: 0.32s;
+    /* Fast-start easing keeps momentum when a slide is retargeted mid-flight */
+    --lightbox-easing: var(--portfolio-view-easing);
+    position: fixed;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: transparent;
+    color: var(--text-primary);
+    transition: opacity 0.2s ease;
+}
+
+@starting-style {
+    dialog.photo-lightbox[open],
+    dialog.photo-lightbox[open]::backdrop {
+        opacity: 0;
+    }
+}
+
+/* Lives on ::backdrop, outside the fading dialog, so the filter
+    keeps reading the page during dismiss and close. Grayscale is a
+    per-pixel color matrix; unlike blur it samples no neighboring pixels. */
+dialog.photo-lightbox::backdrop {
+    background: transparent;
+    -webkit-backdrop-filter: grayscale(50%);
+    backdrop-filter: grayscale(50%);
+    transition: opacity 0.2s ease;
+}
+
+dialog.photo-lightbox[data-state="closing"],
+dialog.photo-lightbox[data-state="closing"]::backdrop {
+    opacity: 0;
+}
+
+/* ================================================================= */
+/* Lightbox backdrop and stage */
+/* Opaque tint instead of backdrop-filter: dismiss drags only change
+    compositor-friendly opacity */
+div.lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: light-dark(rgb(247 248 247 / 0.96), rgb(8 8 8 / 0.95));
+    opacity: calc(1 - var(--lightbox-dismiss) * 0.85);
+}
+
+div.lightbox-stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    transform: translate3d(0, var(--lightbox-dismiss-y), 0);
+}
+
+/* ================================================================= */
+/* Lightbox carousel */
+/* Three recycled slots; the center slot is at rest when
+    --lightbox-shift is 0 */
+div.lightbox-track {
+    display: flex;
+    inline-size: 300%;
+    block-size: 100%;
+    transform: translate3d(calc((var(--lightbox-shift) - 1) * 100% / 3 + var(--lightbox-drag-x)), 0, 0);
+    will-change: transform;
+}
+
+dialog.photo-lightbox[data-animating] div.lightbox-track,
+dialog.photo-lightbox[data-animating] div.lightbox-stage {
+    transition: transform var(--lightbox-duration) var(--lightbox-easing);
+}
+
+dialog.photo-lightbox[data-animating] div.lightbox-backdrop {
+    transition: opacity var(--lightbox-duration) var(--lightbox-easing);
+}
+
+/* Shorter legs through the blank gap between the last and first photos */
+dialog.photo-lightbox[data-animating="gap"] {
+    --lightbox-duration: 0.24s;
+}
+
+dialog.photo-lightbox[data-state="closing"] div.lightbox-stage {
+    transition: transform 0.22s ease;
+}
+
+dialog.photo-lightbox[data-dragging] {
+    cursor: grabbing;
+}
+
+/* ================================================================= */
+/* Lightbox images */
+div.lightbox-slot {
+    display: grid;
+    flex: none;
+    inline-size: calc(100% / 3);
+    padding: 5rem 1rem;
+    place-items: center;
+    container-type: size;
+}
+
+div.lightbox-frame {
+    position: relative;
+    overflow: hidden;
+    inline-size: min(100cqi, 100cqb * var(--photo-ratio));
+    aspect-ratio: var(--photo-ratio);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+    box-shadow: 0 16px 48px rgb(0 0 0 / 0.35);
+}
+
+div.lightbox-frame picture {
+    display: contents;
+}
+
+div.lightbox-frame img {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+    -webkit-user-drag: none;
+}
+
+img.lightbox-image {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+div.lightbox-frame[data-loaded] img.lightbox-image {
+    opacity: 1;
+}
+
+/* ================================================================= */
+/* Lightbox controls */
+button.lightbox-button {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-inline-size: 3rem;
+    block-size: 3rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+    cursor: pointer;
+    transition: scale 0.2s ease;
+}
+
+button.lightbox-button[hidden] {
+    display: none;
+}
+
+@media (hover: hover) {
+    button.lightbox-button:hover {
+        scale: 1.02;
+    }
+}
+
+button.lightbox-button:active {
+    scale: 0.98;
+}
+
+button.lightbox-button svg {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+button.lightbox-button span {
+    display: none;
+}
+
+button.lightbox-close {
+    inset: 1rem auto auto 1rem;
+}
+
+button.lightbox-previous {
+    inset: auto auto 1rem 1rem;
+}
+
+button.lightbox-next {
+    inset: auto 1rem 1rem auto;
+    flex-direction: row-reverse;
+}
+
+p.lightbox-status {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+@media (min-width: 48rem) {
+    div.lightbox-slot {
+        padding: 5rem 9rem;
+    }
+
+    button.lightbox-button {
+        min-inline-size: 6.25rem;
+        padding-inline: 1rem;
+    }
+
+    button.lightbox-button span {
+        display: inline;
+    }
+
+    button.lightbox-previous,
+    button.lightbox-next {
+        inset-block: 50% auto;
+        translate: 0 -50%;
+    }
+}
+
+/* ================================================================= */
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    dialog.photo-lightbox,
+    dialog.photo-lightbox::backdrop,
+    img.lightbox-image,
+    button.lightbox-button {
+        transition: none;
+    }
+}

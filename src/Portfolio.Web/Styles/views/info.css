@@ -1,0 +1,17 @@
+/* Info view work history */
+
+/* ================================================================= */
+/* Work experience */
+/* Decorative company mark; the adjacent link text names the company */
+img.company-logo {
+    display: inline-block;
+    inline-size: 1.1em;
+    block-size: 1.1em;
+    margin-inline-end: 0.3em;
+    vertical-align: -0.15em;
+    filter: grayscale(1);
+}
+
+div.work-container div.work-item:not(:last-child) {
+    margin-bottom: 3rem;
+}

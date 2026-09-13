@@ -1,0 +1,54 @@
+/* Projects view list, icons, tags, and links */
+
+/* ================================================================= */
+/* Project list and icons */
+ol.project-list > li + li {
+    margin-block-start: 3rem;
+}
+
+/* Decorative project mark sized to the title text; the title itself
+    names the project */
+img.project-icon {
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 0.85em;
+    margin-inline-end: 0.4em;
+    vertical-align: -0.12em;
+    /* Scales artwork of any aspect ratio to fit the slot without distortion */
+    object-fit: contain;
+}
+
+/* ================================================================= */
+/* Project tags and links */
+ul.tag-list,
+ul.project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+ul.tag-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+svg.tag-icon-symbols {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+}
+
+svg.tag-icon {
+    display: block;
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    fill: currentColor;
+}
+
+ul.project-links {
+    margin-block-start: 1em;
+}

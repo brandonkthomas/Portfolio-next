@@ -7,14 +7,17 @@
     "node": ">=24.19.0 <25"
   },
   "scripts": {
-    "build:client": "tsc --project tsconfig.json",
+    "build:client": "node tools/build-client.mjs",
+    "build:client:production": "tsc --project tsconfig.json --noEmit && node tools/build-client.mjs --production",
     "check:client": "tsc --project tsconfig.json --noEmit",
     "check:published-assets": "node tools/verify-published-assets.mjs",
     "check:publisher": "tsc --project tsconfig.publisher.json --noEmit",
-    "photos:build": "node tools/photo-publisher/publish.ts"
+    "photos:build": "node tools/photo-publisher/publish.ts",
+    "watch:client": "node tools/build-client.mjs --watch"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
+    "esbuild": "0.28.2",
     "sharp": "0.35.4",
     "typescript": "5.9.3"
   }

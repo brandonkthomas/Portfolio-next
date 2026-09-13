@@ -13,6 +13,7 @@ publish/
 # Node dependencies / generated browser assets
 node_modules/
 src/Portfolio.Web/wwwroot/assets/js/
+src/Portfolio.Web/wwwroot/css/portfolio.css
 
 # Local configuration
 *.user

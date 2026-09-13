@@ -38,11 +38,11 @@ jobs:
       - name: Restore build tools
         run: npm ci --ignore-scripts
 
-      - name: Check TypeScript and build client assets
+      - name: Check TypeScript and build production client assets
         run: |
           npm run check:client
           npm run check:publisher
-          npm run build:client
+          npm run build:client:production
 
       - name: Restore .NET dependencies
         run: dotnet restore Portfolio.slnx --locked-mode

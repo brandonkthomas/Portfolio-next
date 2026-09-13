@@ -3,11 +3,8 @@
     "target": "ES2022",
     "module": "ES2022",
     "lib": ["DOM", "ES2022"],
-    "rootDir": "src/Portfolio.Web/Client",
-    "outDir": "src/Portfolio.Web/wwwroot/assets/js",
     "strict": true,
-    "noEmitOnError": true,
-    "removeComments": true,
+    "noEmit": true,
     "verbatimModuleSyntax": true,
     "types": []
   },

@@ -36,7 +36,7 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("text/css", response.Content.Headers.ContentType?.MediaType);
-        Assert.Contains("color-scheme: light dark", css, StringComparison.Ordinal);
+        Assert.Matches(@"color-scheme:\s*light dark", css);
         Assert.Contains("light-dark(", css, StringComparison.Ordinal);
         Assert.Contains("html[data-theme-transition]", css, StringComparison.Ordinal);
     }

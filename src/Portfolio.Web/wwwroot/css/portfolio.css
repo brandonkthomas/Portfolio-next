@@ -1,3 +1,4 @@
+/* ================================================================= */
 /* Theme */
 :root {
     color-scheme: light dark;
@@ -32,6 +33,7 @@
     --icon-filter: none;
 }
 
+/* ================================================================= */
 /* Base */
 * {
     box-sizing: border-box;
@@ -52,7 +54,24 @@ button {
     font: inherit;
 }
 
-/* Shared link treatment: a muted underline that fades to the primary text color on hover or keyboard focus */
+/* ================================================================= */
+/* Lists */
+ul.navigation-list,
+ul.contact-list,
+ol.project-list,
+ul.project-links,
+ul.tag-list,
+ol.photo-list {
+    margin: 0;
+    padding: 0;
+    color: var(--text-secondary);
+    list-style: none;
+}
+
+/* ================================================================= */
+/* Links and focus states */
+/* Shared link treatment: a muted underline that fades to the primary
+    text color on hover or keyboard focus */
 a {
     text-decoration-line: underline;
     text-decoration-color: var(--text-muted);
@@ -72,6 +91,8 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
+/* ================================================================= */
+/* Skip link */
 a.skip-link {
     position: fixed;
     z-index: 3;
@@ -85,6 +106,7 @@ a.skip-link:focus {
     transform: none;
 }
 
+/* ================================================================= */
 /* Portfolio shell and navigation */
 div.portfolio-shell {
     min-block-size: 100vh;
@@ -113,6 +135,8 @@ div.portfolio-shell:has(div.portfolio-navigation[data-open="true"])::before {
     backdrop-filter: blur(6px) grayscale(50%);
 }
 
+/* ================================================================= */
+/* Sidebar */
 aside.portfolio-sidebar {
     position: sticky;
     z-index: 2;
@@ -122,6 +146,8 @@ aside.portfolio-sidebar {
     background: var(--bg-primary);
 }
 
+/* ================================================================= */
+/* Sidebar heading and menu */
 div.sidebar-heading,
 button.menu-button {
     display: flex;
@@ -146,6 +172,8 @@ span.menu-icon {
     border-block: 2px solid currentColor;
 }
 
+/* ================================================================= */
+/* Mobile navigation panel */
 div.portfolio-navigation {
     position: absolute;
     inset: 100% 0 auto;
@@ -170,6 +198,8 @@ div.portfolio-navigation[data-open="true"] {
     transition-delay: 0s;
 }
 
+/* ================================================================= */
+/* Sidebar links and branding */
 aside.portfolio-sidebar a {
     color: var(--text-secondary);
     text-decoration: none;
@@ -198,18 +228,8 @@ img.project-icon.monochrome-icon {
     filter: var(--icon-filter);
 }
 
-ul.navigation-list,
-ul.contact-list,
-ol.project-list,
-ul.project-links,
-ul.tag-list,
-ol.photo-list {
-    margin: 0;
-    padding: 0;
-    color: var(--text-secondary);
-    list-style: none;
-}
-
+/* ================================================================= */
+/* Navigation and contact lists */
 ul.navigation-list,
 ul.contact-list {
     display: grid;
@@ -247,7 +267,8 @@ ul.navigation-list a[aria-current="page"] {
     font-weight: 700;
 }
 
-/* Icon-only theme control */
+/* ================================================================= */
+/* Theme control icon button */
 div.theme-control {
     margin-block-start: 0.5rem;
 }
@@ -295,6 +316,7 @@ svg.theme-icon {
     display: none;
 }
 
+/* ================================================================= */
 /* Page content */
 main.portfolio-main {
     inline-size: calc(100% - 2rem);
@@ -311,6 +333,8 @@ main.portfolio-main[data-portfolio-view="photos"] div.portfolio-view-content {
     inline-size: 100%;
 }
 
+/* ================================================================= */
+/* Theme view transition */
 html[data-theme-transition]::view-transition-image-pair(root) {
     isolation: auto;
 }
@@ -338,6 +362,8 @@ html[data-theme-transition]::view-transition-new(root) {
     }
 }
 
+/* ================================================================= */
+/* Portfolio view transitions */
 html[data-portfolio-transition]::view-transition-old(root),
 html[data-portfolio-transition]::view-transition-new(root) {
     mix-blend-mode: normal;
@@ -369,8 +395,9 @@ html[data-portfolio-transition]::view-transition-new(portfolio-navigation-indica
     opacity: 0;
 }
 
-/* The chrome never animates, so only the live new snapshot is needed. The old snapshot would freeze a closing
-   mobile menu mid-fade and show it through the fading live menu until the transition ends. */
+/* The chrome never animates, so only the live new snapshot is needed.
+    The old snapshot would freeze a closing mobile menu mid-fade and
+    show it through the fading live menu until the transition ends. */
 html[data-portfolio-transition]::view-transition-old(portfolio-chrome) {
     display: none;
 }
@@ -423,6 +450,8 @@ html[data-portfolio-transition="backward"]::view-transition-new(root) {
     }
 }
 
+/* ================================================================= */
+/* Page headings */
 main.portfolio-main:focus {
     outline: none;
 }
@@ -435,35 +464,10 @@ header.page-heading h1 {
     font-size: 1.75rem;
 }
 
+/* ================================================================= */
+/* Projects and work experience */
 ol.project-list > li + li {
     margin-block-start: 3rem;
-}
-
-ol.photo-list {
-    --photo-column-count: 2;
-    --photo-grid-gap: 1rem;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--photo-grid-gap);
-}
-
-@supports (display: grid-lanes) {
-    ol.photo-list {
-        display: grid-lanes;
-    }
-}
-
-ol.photo-list[data-masonry="true"] {
-    position: relative;
-    display: block;
-}
-
-ol.photo-list[data-masonry="true"] > li {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    inline-size: var(--photo-item-width);
-    transform: translate3d(var(--photo-x), var(--photo-y), 0);
 }
 
 article.project h2,
@@ -472,13 +476,16 @@ div.work-container div.work-item h4.work-title {
     color: var(--text-primary);
 }
 
-/* Decorative project mark sized to the title text; the title itself names the project */
+/* Decorative project mark sized to the title text; the title itself
+    names the project */
 img.project-icon {
     display: inline-block;
     inline-size: 1em;
     block-size: 0.85em;
     margin-inline-end: 0.4em;
     vertical-align: -0.12em;
+    /* Scales artwork of any aspect ratio to fit the slot without distortion */
+    object-fit: contain;
 }
 
 /* Decorative company mark; the adjacent link text names the company */
@@ -500,6 +507,8 @@ p.subtitle-meta {
     color: var(--text-muted);
 }
 
+/* ================================================================= */
+/* Project tags and links */
 ul.tag-list,
 ul.project-links {
     display: flex;
@@ -533,6 +542,35 @@ ul.project-links {
     margin-block-start: 1em;
 }
 
+/* ================================================================= */
+/* Photo gallery */
+ol.photo-list {
+    --photo-column-count: 2;
+    --photo-grid-gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--photo-grid-gap);
+}
+
+@supports (display: grid-lanes) {
+    ol.photo-list {
+        display: grid-lanes;
+    }
+}
+
+ol.photo-list[data-masonry="true"] {
+    position: relative;
+    display: block;
+}
+
+ol.photo-list[data-masonry="true"] > li {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: var(--photo-item-width);
+    transform: translate3d(var(--photo-x), var(--photo-y), 0);
+}
+
 figure.photo {
     margin: 0;
 }
@@ -548,7 +586,8 @@ figure.photo img {
 /*    margin-block-start: 0.5rem;*/
 /*}*/
 
-/* The placeholder fills the box the img width/height attributes already reserve, so it needs no measurement */
+/* The placeholder fills the box the img width/height attributes
+    already reserve, so it needs no measurement */
 figure.photo a {
     position: relative;
     display: block;
@@ -557,7 +596,10 @@ figure.photo a {
     -webkit-touch-callout: none;
 }
 
-/* Loading shimmer: the pseudo-element exists only until JavaScript marks the photo loaded */
+/* ================================================================= */
+/* Photo loading state */
+/* Loading shimmer: the pseudo-element exists only until JavaScript
+    marks the photo loaded */
 figure.photo a:not([data-loaded])::before,
 div.lightbox-frame:not([data-loaded], [data-preview])::before {
     content: "";
@@ -568,8 +610,9 @@ div.lightbox-frame:not([data-loaded], [data-preview])::before {
     transform: translateX(-100%);
 }
 
-/* Transform-only, so the sweep runs on the compositor without repainting. Without scripting nothing would ever
-   mark photos loaded, so the tint stays static instead of animating beneath loaded images. */
+/* Transform-only, so the sweep runs on the compositor without
+    repainting. Without scripting nothing would ever mark photos loaded,
+    so the tint stays static instead of animating beneath loaded images. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     figure.photo a:not([data-loaded])::before,
     div.lightbox-frame:not([data-loaded], [data-preview])::before {
@@ -583,6 +626,7 @@ div.lightbox-frame:not([data-loaded], [data-preview])::before {
     }
 }
 
+/* ================================================================= */
 /* Photo lightbox */
 :root[data-lightbox-open] {
     overflow: hidden;
@@ -619,8 +663,9 @@ dialog.photo-lightbox {
     }
 }
 
-/* Lives on ::backdrop, outside the fading dialog, so the filter keeps reading the page during dismiss and close.
-   Grayscale is a per-pixel color matrix; unlike blur it samples no neighboring pixels. */
+/* Lives on ::backdrop, outside the fading dialog, so the filter
+    keeps reading the page during dismiss and close. Grayscale is a
+    per-pixel color matrix; unlike blur it samples no neighboring pixels. */
 dialog.photo-lightbox::backdrop {
     background: transparent;
     -webkit-backdrop-filter: grayscale(50%);
@@ -633,7 +678,10 @@ dialog.photo-lightbox[data-state="closing"]::backdrop {
     opacity: 0;
 }
 
-/* Opaque tint instead of backdrop-filter: dismiss drags only change compositor-friendly opacity */
+/* ================================================================= */
+/* Lightbox backdrop and stage */
+/* Opaque tint instead of backdrop-filter: dismiss drags only change
+    compositor-friendly opacity */
 div.lightbox-backdrop {
     position: absolute;
     inset: 0;
@@ -652,7 +700,10 @@ div.lightbox-stage {
     transform: translate3d(0, var(--lightbox-dismiss-y), 0);
 }
 
-/* Three recycled slots; the center slot is at rest when --lightbox-shift is 0 */
+/* ================================================================= */
+/* Lightbox carousel */
+/* Three recycled slots; the center slot is at rest when
+    --lightbox-shift is 0 */
 div.lightbox-track {
     display: flex;
     inline-size: 300%;
@@ -683,6 +734,8 @@ dialog.photo-lightbox[data-dragging] {
     cursor: grabbing;
 }
 
+/* ================================================================= */
+/* Lightbox images */
 div.lightbox-slot {
     display: grid;
     flex: none;
@@ -725,6 +778,8 @@ div.lightbox-frame[data-loaded] img.lightbox-image {
     opacity: 1;
 }
 
+/* ================================================================= */
+/* Lightbox controls */
 button.lightbox-button {
     position: absolute;
     display: flex;
@@ -814,6 +869,7 @@ p.lightbox-status {
     }
 }
 
+/* ================================================================= */
 /* Desktop */
 @media (min-width: 68rem) {
     :root {
@@ -893,6 +949,8 @@ p.lightbox-status {
     }
 }
 
+/* ================================================================= */
+/* Narrow screens */
 @media (max-width: 22rem) {
     ol.photo-list {
         --photo-column-count: 1;
@@ -900,15 +958,15 @@ p.lightbox-status {
     }
 }
 
+/* ================================================================= */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     div.portfolio-shell::before,
     div.portfolio-navigation,
     aside.portfolio-sidebar a {
         transition-duration: 0.01ms;
     }
-}
 
-@media (prefers-reduced-motion: reduce) {
     dialog.photo-lightbox,
     dialog.photo-lightbox::backdrop,
     img.lightbox-image,

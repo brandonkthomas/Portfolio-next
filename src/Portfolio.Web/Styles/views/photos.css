@@ -51,6 +51,7 @@ figure.photo a {
     display: block;
     overflow: hidden;
     background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+    cursor: pointer;
     -webkit-touch-callout: none;
 }
 

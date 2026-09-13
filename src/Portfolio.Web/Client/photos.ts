@@ -71,21 +71,6 @@ function readPhotos(list: HTMLElement): LightboxPhoto[] {
     return photos;
 }
 
-/**
- * Identifies an ordinary primary-button activation without browser modifiers.
- * Mirrors navigation.ts: client modules stay import-free so every module request uses a fingerprinted URL.
- */
-function isOrdinaryActivation(event: MouseEvent, link: HTMLAnchorElement): boolean {
-    return !event.defaultPrevented
-        && event.button === 0
-        && !event.metaKey
-        && !event.ctrlKey
-        && !event.shiftKey
-        && !event.altKey
-        && !link.hasAttribute("download")
-        && (!link.target || link.target.toLowerCase() === "_self");
-}
-
 function createDiv(className: string): HTMLDivElement {
     const element = document.createElement("div");
     element.className = className;
@@ -710,29 +695,58 @@ export function initializePhotoLightbox(list: HTMLElement): () => void {
         elements.resizeObserver.observe(elements.stage);
     };
 
-    const onListClick = (event: MouseEvent): void => {
-        if (!(event.target instanceof Element)) {
-            return;
-        }
-
-        const trigger = event.target.closest<HTMLAnchorElement>(triggerSelector);
-        if (!trigger || !isOrdinaryActivation(event, trigger)) {
-            return;
-        }
-
-        const photoIndex = photos.findIndex((photo) => photo.trigger === trigger);
-        if (photoIndex < 0) {
-            return;
-        }
-
-        event.preventDefault();
-        open(photoIndex);
+    const findPhotoIndex = (target: EventTarget | null): number => {
+        const trigger = target instanceof Element ? target.closest<HTMLAnchorElement>(triggerSelector) : null;
+        return trigger ? photos.findIndex((photo) => photo.trigger === trigger) : -1;
     };
 
+    const onListClick = (event: MouseEvent): void => {
+        const photoIndex = findPhotoIndex(event.target);
+        if (photoIndex >= 0) {
+            event.preventDefault();
+            open(photoIndex);
+        }
+    };
+
+    // Without an href the trigger has no native activation, so Enter and Space open it like a button.
+    const onListKeyDown = (event: KeyboardEvent): void => {
+        if (event.key !== "Enter" && event.key !== " ") {
+            return;
+        }
+
+        const photoIndex = findPhotoIndex(event.target);
+        if (photoIndex >= 0) {
+            event.preventDefault();
+            open(photoIndex);
+        }
+    };
+
+    // The href is the no-JavaScript full-size fallback. Removing it while the lightbox is active prevents the
+    // browser's link-preview status bubble and makes the trigger an explicit button; disposal restores it.
+    for (const { trigger } of photos) {
+        const href = trigger.getAttribute("href");
+        if (href !== null) {
+            trigger.dataset.photoHref = href;
+            trigger.removeAttribute("href");
+        }
+        trigger.setAttribute("role", "button");
+        trigger.tabIndex = 0;
+    }
+
     list.addEventListener("click", onListClick);
+    list.addEventListener("keydown", onListKeyDown);
 
     return () => {
         list.removeEventListener("click", onListClick);
+        list.removeEventListener("keydown", onListKeyDown);
+        for (const { trigger } of photos) {
+            if (trigger.dataset.photoHref !== undefined) {
+                trigger.setAttribute("href", trigger.dataset.photoHref);
+                delete trigger.dataset.photoHref;
+            }
+            trigger.removeAttribute("role");
+            trigger.removeAttribute("tabindex");
+        }
         window.clearTimeout(settleTimer);
         window.clearTimeout(closeTimer);
         window.clearTimeout(neighborTimer);

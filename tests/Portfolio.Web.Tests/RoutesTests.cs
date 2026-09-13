@@ -100,7 +100,8 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         Assert.Contains("class=\"portfolio-view-content\"", html, StringComparison.Ordinal);
         Assert.Equal(3, CountOccurrences(html, "class=\"navigation-indicator\""));
         Assert.Contains("/assets/svg/bt-logo-boxed", html, StringComparison.Ordinal);
-        Assert.Equal(2, CountOccurrences(html, "/assets/svg/external-link-nobox"));
+        Assert.Equal(3, CountOccurrences(html, "/assets/svg/external-link-nobox"));
+        Assert.Contains("href=\"https://github.com/brandonkthomas\"", html, StringComparison.Ordinal);
 
         var menuIndex = html.IndexOf("data-menu", StringComparison.Ordinal);
         var themeButtonIndex = html.IndexOf("data-theme-button", StringComparison.Ordinal);

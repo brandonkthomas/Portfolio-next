@@ -4,6 +4,10 @@
     {
       "slug": "portfolio",
       "title": "Portfolio (Legacy)",
+      "icon": {
+        "path": "/assets/svg/bt-logo-boxed.svg",
+        "invertInDarkTheme": true
+      },
       "meta": "Apr 2025",
       "summary": "Previous iteration of my portfolio site. Included an interactive business card/background, a project showcase grid, and a photo gallery.",
       "order": 10,
@@ -11,11 +15,26 @@
       "sourceUrl": "https://github.com/brandonkthomas/Portfolio"
     },
     {
+      "slug": "swift-bible",
+      "title": "SwiftBible",
+      "icon": {
+        "path": "/assets/webp/projects/swift-bible.webp"
+      },
+      "meta": "Jun 2026",
+      "summary": "A native Bible reader app for iPhone with highlights, notes, themes, and search.",
+      "order": 20,
+      "tags": ["Swift", "SwiftUI"],
+      "sourceUrl": "https://github.com/brandonkthomas/SwiftBible"
+    },
+    {
       "slug": "webamp",
       "title": "WebAmp",
+      "icon": {
+        "path": "/assets/webp/projects/webamp.webp"
+      },
       "meta": "Feb 2026",
       "summary": "A web-based music streamer with Spotify and SoundCloud support.",
-      "order": 20,
+      "order": 25,
       "tags": [".NET Core", "TypeScript", "CSS"],
       "sourceUrl": "https://github.com/brandonkthomas/WebAmp"
     },
@@ -23,15 +42,18 @@
       "slug": "localdrop",
       "title": "LocalDrop",
       "meta": "May 2026",
-      "summary": "A browser-based local file transfer interface with QR code pairing.",
+      "summary": "A peer-to-peer local file transfer interface webapp utilizing QR codes.",
       "order": 30,
       "tags": ["TypeScript"]
     },
     {
       "slug": "spectrometer",
       "title": "Spectrometer",
+      "icon": {
+        "path": "/assets/webp/projects/spectrometer.webp"
+      },
       "meta": "Aug 2024",
-      "summary": "A Windows hardware monitor with sensor lists, customizable graphs, and display settings.",
+      "summary": "A modern Windows hardware monitor with sensor lists and customizable graphs.",
       "order": 40,
       "tags": ["C#", "WPF", "Windows"],
       "sourceUrl": "https://github.com/brandonkthomas/Spectrometer",
@@ -46,7 +68,7 @@
       "slug": "image-hex-editor",
       "title": "Image Hex Editor",
       "meta": "Dec 2025",
-      "summary": "A browser tool for inspecting and editing image bytes as hexadecimal data.",
+      "summary": "A webapp for inspecting and editing image bytes as hexadecimal data.",
       "order": 50,
       "tags": ["TypeScript"],
       "sourceUrl": "https://github.com/brandonkthomas/ImageHexEditor"
@@ -55,7 +77,7 @@
       "slug": "name-trace",
       "title": "NameTrace",
       "meta": "Dec 2025",
-      "summary": "A reverse phone lookup web application.",
+      "summary": "A reverse phone lookup webapp.",
       "order": 60,
       "tags": [".NET Core", "TypeScript"],
       "sourceUrl": "https://github.com/brandonkthomas/NameTrace"
@@ -63,7 +85,7 @@
     {
       "slug": "deployment-scripts",
       "title": "Deployment Scripts",
-      "summary": "Small shell utilities for new macOS deployments and creating bootable Windows installation media.",
+      "summary": "Shell utilities for new macOS deployments and creating bootable Windows installation media.",
       "order": 70,
       "tags": ["Shell", "CLI"],
       "sourceUrl": "https://github.com/brandonkthomas/deployment-scripts"

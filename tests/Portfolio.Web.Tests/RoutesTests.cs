@@ -128,7 +128,53 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         Assert.Contains("href=\"#tag-icon-windows\"", html, StringComparison.Ordinal);
         Assert.Contains("href=\"#tag-icon-bash\"", html, StringComparison.Ordinal);
         Assert.Contains("href=\"#tag-icon-terminal\"", html, StringComparison.Ordinal);
+        Assert.Contains("href=\"#tag-icon-swift\"", html, StringComparison.Ordinal);
+        Assert.Contains("<symbol id=\"tag-icon-swift\"", html, StringComparison.Ordinal);
         Assert.DoesNotContain("/assets/svg/project-tags/", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Projects_render_fingerprinted_catalog_icons()
+    {
+        using var response = await _client.GetAsync("/projects");
+        var html = await response.Content.ReadAsStringAsync();
+
+        var webAmpIcon = Regex.Match(
+            html,
+            "<img class=\"project-icon\"\\s+src=\"(?<path>/assets/webp/projects/webamp\\.[^\"]+\\.webp)\"");
+        Assert.True(webAmpIcon.Success, "The projects page did not reference a fingerprinted WebAmp icon.");
+        Assert.Matches(
+            "<img class=\"project-icon monochrome-icon\"\\s+src=\"/assets/svg/bt-logo-boxed\\.[^\"]+\\.svg\"",
+            html);
+        Assert.Matches(
+            "<img class=\"project-icon\"\\s+src=\"/assets/webp/projects/swift-bible\\.[^\"]+\\.webp\"",
+            html);
+
+        // Projects without catalog artwork share one fingerprinted placeholder icon.
+        var placeholderPattern = "<img class=\"project-icon\" src=\"/assets/svg/project-placeholder\\.[^\"]+\\.svg\"";
+        Assert.Equal(4, Regex.Matches(html, placeholderPattern).Count);
+
+        using var iconResponse = await _client.GetAsync(webAmpIcon.Groups["path"].Value);
+        Assert.Equal(HttpStatusCode.OK, iconResponse.StatusCode);
+        Assert.Equal("image/webp", iconResponse.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Portfolio_document_links_fingerprinted_favicons()
+    {
+        using var response = await _client.GetAsync("/");
+        var html = await response.Content.ReadAsStringAsync();
+
+        var favicon = Regex.Match(html, "<link rel=\"icon\" href=\"(?<path>/favicon\\.[^\"]+\\.ico)\" sizes=\"any\">");
+        var touchIcon = Regex.Match(html, "<link rel=\"apple-touch-icon\" href=\"(?<path>/apple-touch-icon\\.[^\"]+\\.png)\">");
+        Assert.True(favicon.Success, "The document did not link a fingerprinted favicon.");
+        Assert.True(touchIcon.Success, "The document did not link a fingerprinted apple-touch icon.");
+
+        foreach (var path in new[] { favicon.Groups["path"].Value, touchIcon.Groups["path"].Value, "/favicon.ico" })
+        {
+            using var iconResponse = await _client.GetAsync(path);
+            Assert.Equal(HttpStatusCode.OK, iconResponse.StatusCode);
+        }
     }
 
     private static int CountOccurrences(string value, string expected)

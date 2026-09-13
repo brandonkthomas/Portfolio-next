@@ -23,6 +23,9 @@ public sealed record ProjectRecord
     /// <summary>Gets the project display title.</summary>
     public string Title { get; init; } = string.Empty;
 
+    /// <summary>Gets the optional decorative icon rendered before the title.</summary>
+    public ProjectIcon? Icon { get; init; }
+
     /// <summary>
     /// Gets the project display caption.
     /// </summary>
@@ -45,6 +48,18 @@ public sealed record ProjectRecord
 
     /// <summary>Gets optional downloadable project artifacts.</summary>
     public IReadOnlyList<ProjectDownload> Downloads { get; init; } = [];
+}
+
+/// <summary>
+/// Decorative project mark served from the application's static assets
+/// </summary>
+public sealed record ProjectIcon
+{
+    /// <summary>Gets the site-relative static asset path, such as /assets/webp/projects/webamp.webp.</summary>
+    public string Path { get; init; } = string.Empty;
+
+    /// <summary>Gets whether a single-color mark inverts with the dark theme like other monochrome site icons.</summary>
+    public bool InvertInDarkTheme { get; init; }
 }
 
 /// <summary>

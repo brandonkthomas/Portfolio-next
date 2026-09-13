@@ -13,7 +13,7 @@ public static class ContentServiceCollectionExtensions
         var contentDirectory = Path.Combine(environment.ContentRootPath, "Content");
 
         services.AddSingleton<IProjectCatalog>(_ =>
-            JsonProjectCatalog.Load(Path.Combine(contentDirectory, "projects.v1.json")));
+            JsonProjectCatalog.Load(Path.Combine(contentDirectory, "projects.v1.json"), environment.WebRootPath));
         services.AddSingleton<ReloadingPhotoCatalog>();
         services.AddSingleton<IPhotoCatalog>(provider =>
             provider.GetRequiredService<ReloadingPhotoCatalog>());

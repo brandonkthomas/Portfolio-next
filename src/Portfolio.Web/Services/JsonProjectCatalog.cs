@@ -26,13 +26,15 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
     public IReadOnlyList<ProjectRecord> Projects { get; }
 
     /// <summary>Deserializes and validates a project catalog so malformed content fails startup.</summary>
-    public static JsonProjectCatalog Load(string path)
+    /// <param name="path">The project catalog JSON file.</param>
+    /// <param name="webRootPath">The static web root used to verify that referenced icon files exist.</param>
+    public static JsonProjectCatalog Load(string path, string webRootPath)
     {
         using var stream = File.OpenRead(path);
         var document = JsonSerializer.Deserialize<ProjectCatalogDocument>(stream, JsonOptions)
             ?? throw new InvalidDataException($"Project catalog '{path}' is empty.");
 
-        var errors = Validate(document);
+        var errors = Validate(document, webRootPath);
         if (errors.Count > 0)
         {
             throw new CatalogValidationException("Project catalog", errors);
@@ -47,7 +49,7 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
     }
 
     /// <summary>Collects schema and record errors so one failure reports all content problems.</summary>
-    private static List<string> Validate(ProjectCatalogDocument document)
+    private static List<string> Validate(ProjectCatalogDocument document, string webRootPath)
     {
         var errors = new List<string>();
 
@@ -93,6 +95,7 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
                 errors.Add($"Project '{label}' contains duplicate tags.");
             }
 
+            ValidateIcon(project.Icon, $"Project '{label}' icon", webRootPath, errors);
             ValidateOptionalHttpUrl(project.SourceUrl, $"Project '{label}' sourceUrl", errors);
             ValidateOptionalLiveUrl(project.LiveUrl, $"Project '{label}' liveUrl", errors);
 
@@ -112,6 +115,31 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
         if (string.IsNullOrWhiteSpace(value) || value.Length > maximumLength)
         {
             errors.Add($"{label} must contain 1 to {maximumLength} characters.");
+        }
+    }
+
+    /// <summary>Restricts icons to existing image assets in the web root so markup never references a missing file.</summary>
+    private static void ValidateIcon(ProjectIcon? icon, string label, string webRootPath, ICollection<string> errors)
+    {
+        if (icon is null)
+        {
+            return;
+        }
+
+        if (!IconPathPattern().IsMatch(icon.Path))
+        {
+            errors.Add($"{label} path must be a PNG, SVG, or WebP file under /assets/.");
+            return;
+        }
+
+        var expectedRoot = Path.GetFullPath(webRootPath) + Path.DirectorySeparatorChar;
+        var filePath = Path.GetFullPath(Path.Combine(
+            webRootPath,
+            icon.Path.TrimStart('/').Replace('/', Path.DirectorySeparatorChar)));
+
+        if (!filePath.StartsWith(expectedRoot, StringComparison.Ordinal) || !File.Exists(filePath))
+        {
+            errors.Add($"{label} file '{icon.Path}' is missing or outside the web root.");
         }
     }
 
@@ -154,6 +182,10 @@ public sealed partial class JsonProjectCatalog : IProjectCatalog
 
         ValidateOptionalHttpUrl(value, label, errors);
     }
+
+    /// <summary>Provides the compiled pattern for lowercase icon asset paths without dot segments or queries.</summary>
+    [GeneratedRegex("^/assets/(?:[a-z0-9]+(?:-[a-z0-9]+)*/)+[a-z0-9]+(?:-[a-z0-9]+)*\\.(?:png|svg|webp)$", RegexOptions.CultureInvariant)]
+    private static partial Regex IconPathPattern();
 
     /// <summary>Provides the compiled pattern used to enforce stable URL-safe project slugs.</summary>
     [GeneratedRegex("^[a-z0-9]+(?:-[a-z0-9]+)*$", RegexOptions.CultureInvariant)]

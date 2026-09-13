@@ -12,7 +12,9 @@
         ["WPF"] = "dotnet",
         ["Windows"] = "windows",
         ["Shell"] = "bash",
-        ["CLI"] = "terminal"
+        ["CLI"] = "terminal",
+        ["Swift"] = "swift",
+        ["SwiftUI"] = "swift"
     };
 }
 
@@ -27,15 +29,30 @@
     {
         <li>
             <article class="project">
-                @* Title *@
-                @if (project.SourceUrl is not null)
-                {
-                    <h2><a href="@project.SourceUrl" rel="external" aria-label="View @project.Title on GitHub">@project.Title</a></h2>
-                }
-                else
-                {
-                    <h2>@project.Title</h2>
-                }
+                @* Title w/ optional decorative icon; Razor rewrites only literal ~/ paths, so the image tag helper resolves this catalog path to its fingerprinted URL *@
+                <h2>
+                    @if (project.Icon is not null)
+                    {
+                        <img class="project-icon@(project.Icon.InvertInDarkTheme ? " monochrome-icon" : null)"
+                             src="@("~" + project.Icon.Path)"
+                             asp-append-version="true"
+                             width="64"
+                             height="64"
+                             alt="">
+                    }
+                    else
+                    {
+                        <img class="project-icon" src="~/assets/svg/project-placeholder.svg" width="64" height="64" alt="">
+                    }
+                    @if (project.SourceUrl is not null)
+                    {
+                        <a href="@project.SourceUrl" rel="external" aria-label="View @project.Title on GitHub">@project.Title</a>
+                    }
+                    else
+                    {
+                        @project.Title
+                    }
+                </h2>
                 
                 @* Caption *@
                 @if (project.Meta is not null)

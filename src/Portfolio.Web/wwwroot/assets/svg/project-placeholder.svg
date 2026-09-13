@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <clipPath id="icon-shape">
+        <rect width="64" height="64" rx="14"/>
+    </clipPath>
+    <rect width="64" height="64" rx="14" fill="#8e8e93"/>
+    <g clip-path="url(#icon-shape)" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="1.5">
+        <path d="M0 0 64 64M64 0 0 64M19 0v64M32 0v64M45 0v64M0 19h64M0 32h64M0 45h64"/>
+        <circle cx="32" cy="32" r="23"/>
+        <circle cx="32" cy="32" r="11"/>
+    </g>
+</svg>

@@ -193,7 +193,8 @@ aside.portfolio-sidebar a.site-name:hover {
 }
 
 img.site-logo,
-img.external-link-icon {
+img.external-link-icon,
+img.project-icon.monochrome-icon {
     filter: var(--icon-filter);
 }
 
@@ -469,6 +470,15 @@ article.project h2,
 div.work-container div.work-item h4.work-title {
     margin-block: 0.5rem;
     color: var(--text-primary);
+}
+
+/* Decorative project mark sized to the title text; the title itself names the project */
+img.project-icon {
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 0.85em;
+    margin-inline-end: 0.4em;
+    vertical-align: -0.12em;
 }
 
 /* Decorative company mark; the adjacent link text names the company */

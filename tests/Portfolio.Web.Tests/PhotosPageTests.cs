@@ -28,7 +28,7 @@ public sealed class PhotosPageTests
                 html,
                 StringComparison.Ordinal);
             Assert.DoesNotMatch("\\s(?:src|srcset)=\"[^\"]*\\.1280\\.", html);
-            Assert.DoesNotContain(" sizes=", html, StringComparison.Ordinal);
+            Assert.DoesNotMatch("<(?:img|source)\\b[^>]*\\ssizes=", html);
             return Task.CompletedTask;
         });
     }

@@ -14,7 +14,7 @@ public sealed class CatalogValidationTests
         var catalogPath = CreateProjectCatalog(liveUrl);
         try
         {
-            var project = Assert.Single(JsonProjectCatalog.Load(catalogPath).Projects);
+            var project = Assert.Single(JsonProjectCatalog.Load(catalogPath, AppContext.BaseDirectory).Projects);
             Assert.Equal(liveUrl, project.LiveUrl);
             Assert.Null(project.SourceUrl);
         }
@@ -35,7 +35,7 @@ public sealed class CatalogValidationTests
         var catalogPath = CreateProjectCatalog(liveUrl);
         try
         {
-            Assert.Throws<CatalogValidationException>(() => JsonProjectCatalog.Load(catalogPath));
+            Assert.Throws<CatalogValidationException>(() => JsonProjectCatalog.Load(catalogPath, AppContext.BaseDirectory));
         }
         finally
         {
@@ -72,13 +72,59 @@ public sealed class CatalogValidationTests
         try
         {
             var exception = Assert.Throws<CatalogValidationException>(() =>
-                JsonProjectCatalog.Load(catalogPath));
+                JsonProjectCatalog.Load(catalogPath, AppContext.BaseDirectory));
 
             Assert.Contains("Duplicate project slug 'duplicate'.", exception.Message, StringComparison.Ordinal);
         }
         finally
         {
             File.Delete(catalogPath);
+        }
+    }
+
+    [Fact]
+    public void Project_catalog_accepts_an_existing_icon_asset()
+    {
+        var webRootPath = Directory.CreateTempSubdirectory("portfolio-project-root-").FullName;
+        var iconDirectory = Directory.CreateDirectory(Path.Combine(webRootPath, "assets", "webp", "projects"));
+        File.WriteAllBytes(Path.Combine(iconDirectory.FullName, "demo.webp"), [0]);
+        var catalogPath = CreateProjectCatalogWithIcon("/assets/webp/projects/demo.webp");
+
+        try
+        {
+            var project = Assert.Single(JsonProjectCatalog.Load(catalogPath, webRootPath).Projects);
+            Assert.Equal("/assets/webp/projects/demo.webp", project.Icon?.Path);
+            Assert.True(project.Icon?.InvertInDarkTheme);
+        }
+        finally
+        {
+            File.Delete(catalogPath);
+            Directory.Delete(webRootPath, recursive: true);
+        }
+    }
+
+    [Theory]
+    [InlineData("/assets/webp/projects/missing.webp")]
+    [InlineData("/assets/../appsettings.json")]
+    [InlineData("/fixtures/photos/demo.webp")]
+    [InlineData("https://example.com/icon.png")]
+    [InlineData("/assets/webp/projects/demo.webp?v=1")]
+    public void Project_catalog_rejects_missing_or_unsafe_icon_paths(string iconPath)
+    {
+        var webRootPath = Directory.CreateTempSubdirectory("portfolio-project-root-").FullName;
+        var catalogPath = CreateProjectCatalogWithIcon(iconPath);
+
+        try
+        {
+            var exception = Assert.Throws<CatalogValidationException>(() =>
+                JsonProjectCatalog.Load(catalogPath, webRootPath));
+
+            Assert.Contains("icon", exception.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(catalogPath);
+            Directory.Delete(webRootPath, recursive: true);
         }
     }
 
@@ -130,6 +176,23 @@ public sealed class CatalogValidationTests
         File.WriteAllText(path, contents);
         return path;
     }
+
+    private static string CreateProjectCatalogWithIcon(string iconPath) => CreateTemporaryFile(
+        $$"""
+        {
+          "schemaVersion": 1,
+          "projects": [
+            {
+              "slug": "demo",
+              "title": "Demo",
+              "icon": { "path": "{{iconPath}}", "invertInDarkTheme": true },
+              "summary": "A demo.",
+              "order": 1,
+              "tags": ["Web"]
+            }
+          ]
+        }
+        """);
 
     private static string CreateProjectCatalog(string liveUrl) => CreateTemporaryFile(
         $$"""

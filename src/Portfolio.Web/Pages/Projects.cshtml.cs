@@ -32,7 +32,7 @@ public sealed class ProjectsModel(
         SetMetadata(new PageMetadata(
             NavigationKey: "projects",
             DocumentTitle: "Projects | brandonthomas.net",
-            Description: "Brandon Thomas",
+            Description: "Projects | Brandon Thomas",
             CanonicalPath: "/projects"));
         Projects = projectCatalog.Projects;
 

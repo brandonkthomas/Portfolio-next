@@ -25,7 +25,7 @@ public sealed class PhotosModel(
         SetMetadata(new PageMetadata(
             NavigationKey: "photos",
             DocumentTitle: "Photos | brandonthomas.net",
-            Description: "Brandon Thomas",
+            Description: "Photos | Brandon Thomas",
             CanonicalPath: "/photos"));
     }
 

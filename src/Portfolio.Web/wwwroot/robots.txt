@@ -11,8 +11,6 @@ User-agent: Amzn-User
 User-agent: Andibot
 User-agent: Anomura
 User-agent: anthropic-ai
-User-agent: Applebot
-User-agent: Applebot-Extended
 User-agent: atlassian-bot
 User-agent: Awario
 User-agent: AzureAI-SearchBot

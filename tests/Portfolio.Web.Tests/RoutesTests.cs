@@ -262,6 +262,7 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         var html = await response.Content.ReadAsStringAsync();
 
         Assert.Equal("max-age=31536000", GetHeader(response, "Strict-Transport-Security"));
+        Assert.Contains("<meta property=\"og:description\" content=\"Projects | Brandon Thomas\">", html, StringComparison.Ordinal);
         Assert.Contains("<meta name=\"twitter:card\" content=\"summary_large_image\">", html, StringComparison.Ordinal);
         var image = Regex.Match(html, "<meta property=\"og:image\" content=\"https://brandonthomas\\.net(?<path>/assets/webp/opengraph\\.[a-z0-9]+\\.webp)\">");
         Assert.True(image.Success, "The document did not advertise an absolute fingerprinted og:image.");

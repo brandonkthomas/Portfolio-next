@@ -155,6 +155,8 @@ div.lightbox-frame[data-loaded] img.lightbox-image {
 /* ================================================================= */
 /* Lightbox controls */
 button.lightbox-button {
+    /* Disables double-tap-to-zoom so rapid taps step photos instead of zooming the page */
+    touch-action: manipulation;
     position: absolute;
     display: flex;
     align-items: center;

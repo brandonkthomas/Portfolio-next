@@ -18,7 +18,7 @@ public sealed class IndexModel(IOptions<PortfolioOptions> options) : PortfolioPa
         SetMetadata(new PageMetadata(
             NavigationKey: "about",
             DocumentTitle: "brandonthomas.net",
-            Description: "Brandon Thomas",
+            Description: "Info | Brandon Thomas",
             CanonicalPath: "/"));
     }
 }

@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import { readFile } from "node:fs/promises";
+import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -32,6 +32,10 @@ const shared = {
     charset: "utf8",
     sourcemap: false,
     legalComments: "none",
+    // Stylesheet fonts are copied with content-hashed names and referenced by absolute URL.
+    loader: { ".woff2": "file" },
+    assetNames: "assets/fonts/[name]-[hash]",
+    publicPath: "/",
     minify: production,
     logLevel: "warning"
 };
@@ -62,6 +66,8 @@ async function verifyOutput() {
 }
 
 async function build() {
+    // Hashed font names change with content; clear stale copies so only referenced fonts are published.
+    await rm(path.join(webRoot, "assets/fonts"), { recursive: true, force: true });
     await Promise.all(contexts.map((context) => context.rebuild()));
     await verifyOutput();
     console.log(`Built ${entries.length} client assets (${production ? "production: bundled, minified, comments removed" : "development"}).`);

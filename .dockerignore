@@ -10,5 +10,6 @@ publish
 docs
 src/Portfolio.Web/wwwroot/assets/js
 src/Portfolio.Web/wwwroot/css/portfolio.css
+src/Portfolio.Web/wwwroot/assets/fonts
 deploy/*
 !deploy/Dockerfile

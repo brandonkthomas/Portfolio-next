@@ -104,7 +104,9 @@ app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 // Static files
 // Custom health checks
-app.MapStaticAssets().ShortCircuit();
+var staticAssets = app.MapStaticAssets();
+staticAssets.Add(ContentHashedFontCaching.Apply);
+staticAssets.ShortCircuit();
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
     Predicate = registration => registration.Tags.Contains("live")

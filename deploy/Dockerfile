@@ -27,6 +27,7 @@ RUN dotnet restore src/Portfolio.Web/Portfolio.Web.csproj --locked-mode
 COPY src/Portfolio.Web ./src/Portfolio.Web
 COPY --from=client-build /source/src/Portfolio.Web/wwwroot/assets/js ./src/Portfolio.Web/wwwroot/assets/js
 COPY --from=client-build /source/src/Portfolio.Web/wwwroot/css ./src/Portfolio.Web/wwwroot/css
+COPY --from=client-build /source/src/Portfolio.Web/wwwroot/assets/fonts ./src/Portfolio.Web/wwwroot/assets/fonts
 RUN dotnet publish src/Portfolio.Web/Portfolio.Web.csproj \
     --configuration Release \
     --no-restore \

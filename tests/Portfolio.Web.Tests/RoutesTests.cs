@@ -206,6 +206,55 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         Assert.Contains("Sec-CH-UA-Platform", response.Headers.Vary);
     }
 
+    [Fact]
+    public async Task Stylesheet_fonts_are_self_hosted_and_immutable()
+    {
+        using var documentResponse = await _client.GetAsync("/");
+        var html = await documentResponse.Content.ReadAsStringAsync();
+        var csp = GetHeader(documentResponse, "Content-Security-Policy");
+
+        Assert.DoesNotContain("fonts.googleapis.com", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("fonts.gstatic.com", html, StringComparison.Ordinal);
+        Assert.Contains("font-src 'self';", csp, StringComparison.Ordinal);
+        Assert.Contains("style-src 'self';", csp, StringComparison.Ordinal);
+
+        var stylesheetPath = Regex.Match(html, "href=\"(?<path>/css/portfolio\\.[^\"]+\\.css)\"").Groups["path"].Value;
+        var css = await _client.GetStringAsync(stylesheetPath);
+        var fontPaths = Regex.Matches(css, @"url\(""?(?<path>/assets/fonts/mukta-mahee-(?:400|700)-[A-Z0-9]{8}\.woff2)""?\)")
+            .Select(match => match.Groups["path"].Value)
+            .Distinct()
+            .ToArray();
+        Assert.Equal(2, fontPaths.Length);
+
+        foreach (var fontPath in fontPaths)
+        {
+            using var fontResponse = await _client.GetAsync(fontPath);
+            Assert.Equal(HttpStatusCode.OK, fontResponse.StatusCode);
+            Assert.Equal("font/woff2", fontResponse.Content.Headers.ContentType?.MediaType);
+            Assert.Equal("public, max-age=31536000, immutable", GetHeader(fontResponse, "Cache-Control"));
+        }
+    }
+
+    [Theory]
+    [InlineData("/")]
+    [InlineData("/projects")]
+    [InlineData("/photos")]
+    public async Task Rendered_text_stays_within_the_font_subset(string path)
+    {
+        var html = WebUtility.HtmlDecode(await _client.GetStringAsync(path));
+        // Must match the unicode ranges documented in Styles/foundation/fonts.css.
+        var unsupported = html
+            .Where(character => character is not ('\n' or '\r' or '\t')
+                && character is not (>= '\u0020' and <= '\u007E')
+                && character is not ('\u00A0' or '\u00A9' or '\u00B7' or '\u2013' or '\u2014' or '\u2018'
+                    or '\u2019' or '\u201C' or '\u201D' or '\u2022' or '\u2026'))
+            .Distinct()
+            .Select(character => $"U+{(int)character:X4}")
+            .ToArray();
+
+        Assert.True(unsupported.Length == 0, $"{path} renders characters outside the font subset: {string.Join(", ", unsupported)}");
+    }
+
     private static int CountOccurrences(string value, string expected)
     {
         var count = 0;

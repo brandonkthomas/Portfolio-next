@@ -13,14 +13,14 @@ public sealed class PortfolioResponsePolicyMiddleware(RequestDelegate next)
         "default-src 'self'; "
         + "base-uri 'none'; "
         + "connect-src 'self' https://cloudflareinsights.com; "
-        + "font-src 'self' https://fonts.gstatic.com; "
+        + "font-src 'self'; "
         + "form-action 'self'; "
         + "frame-ancestors 'none'; "
         + "img-src 'self'; "
         + "object-src 'none'; "
         + "script-src 'self' https://static.cloudflareinsights.com; "
         + "script-src-attr 'none'; "
-        + "style-src 'self' https://fonts.googleapis.com; "
+        + "style-src 'self'; "
         + "style-src-attr 'none'";
 
     public async Task InvokeAsync(HttpContext context)

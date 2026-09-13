@@ -1,4 +1,5 @@
 /* Stylesheet entry: imports are the cascade order and are inlined into wwwroot/css/portfolio.css by tools/build-client.mjs */
+@import "./foundation/fonts.css";
 @import "./foundation/theme.css";
 @import "./foundation/base.css";
 @import "./layout/shell.css";

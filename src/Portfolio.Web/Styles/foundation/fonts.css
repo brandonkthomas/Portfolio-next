@@ -1,0 +1,20 @@
+/* Self-hosted Mukta Mahee (SIL OFL 1.1, see ../fonts/OFL.txt), subset to printable ASCII plus common typographic
+   punctuation: U+0020-007E, U+00A0, U+00A9, U+00B7, U+2013-2014, U+2018-2019, U+201C-201D, U+2022, U+2026.
+   Characters outside that set render in the fallback sans-serif; RoutesTests guards the rendered pages.
+   esbuild emits content-hashed copies under /assets/fonts/, which ContentHashedFontCaching marks immutable. */
+
+@font-face {
+    font-family: "Mukta Mahee";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/mukta-mahee-400.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Mukta Mahee";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../fonts/mukta-mahee-700.woff2") format("woff2");
+}

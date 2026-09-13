@@ -6,15 +6,16 @@ function isThemeSelection(value: string | null): value is ThemeSelection {
     return value === "light" || value === "dark";
 }
 
+// Session storage scopes an explicit override to the browsing session; the OS theme applies again afterward.
 function readStoredTheme(): ThemeSelection | null {
     try {
-        const value = localStorage.getItem(themeStorageKey);
+        const value = sessionStorage.getItem(themeStorageKey);
         if (isThemeSelection(value)) {
             return value;
         }
 
         if (value !== null) {
-            localStorage.removeItem(themeStorageKey);
+            sessionStorage.removeItem(themeStorageKey);
         }
 
         return null;
@@ -58,7 +59,7 @@ function initializeThemeControl(): void {
         updateButton(selection);
 
         try {
-            localStorage.setItem(themeStorageKey, selection);
+            sessionStorage.setItem(themeStorageKey, selection);
         } catch {
             // The selected theme still applies for this page when storage is unavailable.
         }

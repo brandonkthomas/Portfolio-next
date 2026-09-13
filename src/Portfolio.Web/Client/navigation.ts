@@ -2,6 +2,8 @@ const portfolioLinkSelector = "a[data-portfolio-link]";
 const portfolioMainSelector = "[data-portfolio-main]";
 const historyStateKey = "portfolio-navigation";
 const photoListSelector = "[data-photo-list]";
+const photoModuleSelector = "link[data-photo-module]";
+const photoTriggerSelector = "a[data-photo-trigger]";
 
 interface ShellContract {
     id: string;
@@ -12,6 +14,10 @@ interface PortfolioHistoryState {
     key: typeof historyStateKey;
     scrollX: number;
     scrollY: number;
+}
+
+interface PhotoLightboxModule {
+    initializePhotoLightbox(list: HTMLElement): () => void;
 }
 
 interface FetchedPortfolioPage {
@@ -47,6 +53,7 @@ const metadataFields: readonly MetadataField[] = [
 /**
  * Progressively enhances the server-rendered photo list with shortest-column
  * placement while preserving its DOM order and native image loading behavior.
+ * Intrinsic image dimensions reserve every card's height, so image loads never re-run layout.
  */
 function initializePhotoGrid(): () => void {
     const list = document.querySelector<HTMLOListElement>(photoListSelector);
@@ -125,12 +132,6 @@ function initializePhotoGrid(): () => void {
     });
     resizeObserver.observe(list);
 
-    const images = Array.from(list.querySelectorAll<HTMLImageElement>("img"));
-    for (const image of images) {
-        image.addEventListener("load", scheduleLayout);
-        image.addEventListener("error", scheduleLayout);
-    }
-
     layout();
 
     return () => {
@@ -139,10 +140,6 @@ function initializePhotoGrid(): () => void {
         }
 
         resizeObserver.disconnect();
-        for (const image of images) {
-            image.removeEventListener("load", scheduleLayout);
-            image.removeEventListener("error", scheduleLayout);
-        }
 
         delete list.dataset.masonry;
         list.style.removeProperty("--photo-item-width");
@@ -151,6 +148,89 @@ function initializePhotoGrid(): () => void {
             item.style.removeProperty("--photo-x");
             item.style.removeProperty("--photo-y");
         }
+    };
+}
+
+/**
+ * Marks photo links once their preview settles so CSS stops the loading placeholder, and keeps the browser
+ * context menu off photo links. Load events do not bubble, so one capturing listener covers the whole list.
+ */
+function initializePhotoPreviews(): () => void {
+    const list = document.querySelector<HTMLElement>(photoListSelector);
+    if (!list) {
+        return () => undefined;
+    }
+
+    const markSettled = (image: HTMLImageElement): void => {
+        const trigger = image.closest<HTMLElement>(photoTriggerSelector);
+        if (trigger) {
+            trigger.dataset.loaded = "true";
+        }
+    };
+
+    const onImageSettled = (event: Event): void => {
+        if (event.target instanceof HTMLImageElement) {
+            markSettled(event.target);
+        }
+    };
+
+    const onContextMenu = (event: MouseEvent): void => {
+        if (event.target instanceof Element && event.target.closest(photoTriggerSelector)) {
+            event.preventDefault();
+        }
+    };
+
+    list.addEventListener("load", onImageSettled, true);
+    list.addEventListener("error", onImageSettled, true);
+    list.addEventListener("contextmenu", onContextMenu);
+    list.querySelectorAll<HTMLImageElement>(`${photoTriggerSelector} img`).forEach((image) => {
+        if (image.complete && image.naturalWidth > 0) {
+            markSettled(image);
+        }
+    });
+
+    return () => {
+        list.removeEventListener("load", onImageSettled, true);
+        list.removeEventListener("error", onImageSettled, true);
+        list.removeEventListener("contextmenu", onContextMenu);
+    };
+}
+
+/**
+ * Loads the photo lightbox from the fingerprinted module URL rendered with the photos view.
+ * Photo links remain ordinary full-size image links until the module is ready or if it fails.
+ */
+function initializePhotoLightbox(): () => void {
+    const list = document.querySelector<HTMLElement>(photoListSelector);
+    const moduleLink = document.querySelector<HTMLLinkElement>(photoModuleSelector);
+    if (!list || !moduleLink) {
+        return () => undefined;
+    }
+
+    let disposed = false;
+    let dispose: () => void = () => undefined;
+    import(moduleLink.href).then((module: PhotoLightboxModule) => {
+        if (!disposed) {
+            dispose = module.initializePhotoLightbox(list);
+        }
+    }, () => undefined);
+
+    return () => {
+        disposed = true;
+        dispose();
+    };
+}
+
+/** Initializes view-specific photo behavior and returns one cleanup for enhanced navigation. */
+function initializePhotoView(): () => void {
+    const disposeGrid = initializePhotoGrid();
+    const disposePreviews = initializePhotoPreviews();
+    const disposeLightbox = initializePhotoLightbox();
+
+    return () => {
+        disposeLightbox();
+        disposePreviews();
+        disposeGrid();
     };
 }
 
@@ -503,7 +583,7 @@ function initializePortfolioNavigation(closeMenu: () => void): void {
     let navigationSequence = 0;
     let renderedUrl = new URL(location.href);
     let scrollFrame: number | null = null;
-    let disposeCurrentView = initializePhotoGrid();
+    let disposeCurrentView = initializePhotoView();
     let activeViewTransition: ViewTransition | null = null;
 
     const applyPageWithTransition = async (
@@ -526,7 +606,7 @@ function initializePortfolioNavigation(closeMenu: () => void): void {
 
             disposeCurrentView();
             applyPortfolioPage(page, currentMain);
-            disposeCurrentView = initializePhotoGrid();
+            disposeCurrentView = initializePhotoView();
             settleNavigation(destination, mode, historyState, currentMain);
         };
 

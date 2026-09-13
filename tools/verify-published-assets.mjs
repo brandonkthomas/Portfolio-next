@@ -12,6 +12,7 @@ const expectedAssets = new Map([
   ["css/portfolio.css", "text/css"],
   ["assets/js/theme.js", "text/javascript"],
   ["assets/js/navigation.js", "text/javascript"],
+  ["assets/js/photos.js", "text/javascript"],
   ["assets/svg/bt-logo-boxed.svg", "image/svg+xml"],
   ["assets/svg/external-link-nobox.svg", "image/svg+xml"],
 ]);

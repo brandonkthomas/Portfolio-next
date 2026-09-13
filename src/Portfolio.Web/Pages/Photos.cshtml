@@ -1,6 +1,6 @@
 @page "/photos"
 @model PhotosModel
-@* Renders server-provided photo records w/ responsive image attributes *@
+@* Renders preview-size photos; each link targets the full-size image so the grid works without JavaScript *@
 
 <header class="page-heading">
     <h1>Photos</h1>
@@ -12,34 +12,36 @@
 }
 else
 {
+    @* Preloads the lightbox module and supplies its fingerprinted URL across enhanced navigation *@
+    <link rel="modulepreload" href="~/assets/js/photos.js" data-photo-module>
     <ol class="photo-list" data-photo-list>
-        @foreach (var photo in Model.Photos)
+        @for (var index = 0; index < Model.Photos.Count; index++)
         {
-            var jpegVariants = photo.Variants.Where(variant => variant.MediaType == "image/jpeg").ToArray();
-            var fallbackVariants = jpegVariants.Length > 0
-                ? jpegVariants
-                : photo.Variants.GroupBy(variant => variant.MediaType).First().ToArray();
-            var largestVariant = fallbackVariants[^1];
+            var photo = Model.Photos[index];
+            var formats = photo.Variants
+                .GroupBy(variant => variant.MediaType)
+                .Select(format => format.OrderBy(variant => variant.Width).ToArray())
+                .ToArray();
+            var fallback = formats.FirstOrDefault(format => format[0].MediaType == "image/jpeg") ?? formats[0];
+            var preview = fallback[0];
 
             <li>
                 <figure class="photo">
-                    <a href="@largestVariant.Url" aria-label="Open full-size photo: @photo.AltText">
+                    <a href="@fallback[^1].Url" aria-label="Open full-size photo: @photo.AltText" data-photo-trigger>
+                        @* The grid requests only the smallest variant; the lightbox activates the full candidate lists on open *@
                         <picture>
-                            @foreach (var format in photo.Variants
-                                .Where(variant => variant.MediaType != largestVariant.MediaType)
-                                .GroupBy(variant => variant.MediaType))
+                            @foreach (var format in formats.Where(format => format != fallback))
                             {
-                                <source type="@format.Key"
-                                        srcset="@string.Join(", ", format.Select(variant => $"{variant.Url} {variant.Width}w"))"
-                                        sizes="(min-width: 87.5rem) calc((100vw - 37rem) / 4), (min-width: 68rem) calc(8.333vw + 5.333rem), (max-width: 22rem) calc(100vw - 2rem), calc((100vw - 3rem) / 2)">
+                                <source type="@format[0].MediaType"
+                                        srcset="@format[0].Url"
+                                        data-lightbox-srcset="@PhotosModel.FormatSrcset(format)">
                             }
-                            <img src="@largestVariant.Url"
-                                 srcset="@string.Join(", ", fallbackVariants.Select(variant => $"{variant.Url} {variant.Width}w"))"
-                                 sizes="(min-width: 87.5rem) calc((100vw - 37rem) / 4), (min-width: 68rem) calc(8.333vw + 5.333rem), (max-width: 22rem) calc(100vw - 2rem), calc((100vw - 3rem) / 2)"
-                                 width="@largestVariant.Width"
-                                 height="@largestVariant.Height"
+                            <img src="@preview.Url"
+                                 data-lightbox-srcset="@PhotosModel.FormatSrcset(fallback)"
+                                 width="@preview.Width"
+                                 height="@preview.Height"
                                  alt="@photo.AltText"
-                                 loading="lazy"
+                                 loading="@(index < 4 ? "eager" : "lazy")"
                                  decoding="async">
                         </picture>
                     </a>

@@ -28,4 +28,8 @@ public sealed class PhotosModel(
             Description: "Brandon Thomas",
             CanonicalPath: "/photos"));
     }
+
+    /// <summary>Formats one media type's variants as a width-described srcset candidate list.</summary>
+    public static string FormatSrcset(IEnumerable<PhotoVariant> variants) =>
+        string.Join(", ", variants.Select(variant => $"{variant.Url} {variant.Width}w"));
 }

@@ -48,7 +48,7 @@
       "meta": "Dec 2025",
       "summary": "A browser tool for inspecting and editing image bytes as hexadecimal data.",
       "order": 50,
-      "tags": ["TypeScript", "Web"],
+      "tags": ["TypeScript"],
       "sourceUrl": "https://github.com/brandonkthomas/ImageHexEditor"
     },
     {

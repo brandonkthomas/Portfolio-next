@@ -70,14 +70,19 @@ function initializeThemeControl(): void {
         const commitSelection = (): void => {
             if (sequence === transitionSequence) {
                 selectTheme(selection);
+                // Resolve the new colors while data-theme-transition suppresses CSS transitions. Otherwise removing
+                // the attribute in the same style recalculation would start color transitions (e.g. the body
+                // background), and the content would trail the sidebar.
+                void getComputedStyle(document.body).backgroundColor;
             }
         };
 
         if (reducedMotion.matches || typeof document.startViewTransition !== "function") {
             activeTransition?.skipTransition();
             activeTransition = null;
-            delete document.documentElement.dataset.themeTransition;
+            document.documentElement.dataset.themeTransition = "true";
             commitSelection();
+            delete document.documentElement.dataset.themeTransition;
             return;
         }
 

@@ -2,6 +2,15 @@
 
 /* ================================================================= */
 /* Theme view transition */
+/* The theme animation crossfades whole-page snapshots, and the new snapshot is live. Element color transitions
+   (such as the body background used by the open-menu dim) would keep fading inside it while elements without one
+   switch instantly, so the sidebar would visibly change before the content. Commit the new colors instantly. */
+html[data-theme-transition] *,
+html[data-theme-transition] *::before,
+html[data-theme-transition] *::after {
+    transition: none !important;
+}
+
 html[data-theme-transition]::view-transition-image-pair(root) {
     isolation: auto;
 }

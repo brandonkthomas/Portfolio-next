@@ -7,16 +7,18 @@ public sealed class PortfolioResponsePolicyMiddleware(RequestDelegate next)
 {
     private const string CloudflareCacheControl = "Cloudflare-CDN-Cache-Control";
     private const string DocumentCacheControl = "private, no-cache, max-age=0, must-revalidate";
+    // Cloudflare Web Analytics is deliberately adopted: Cloudflare injects its beacon script at the edge and the
+    // beacon reports to cloudflareinsights.com.
     private const string ContentSecurityPolicy =
         "default-src 'self'; "
         + "base-uri 'none'; "
-        + "connect-src 'self'; "
+        + "connect-src 'self' https://cloudflareinsights.com; "
         + "font-src 'self' https://fonts.gstatic.com; "
         + "form-action 'self'; "
         + "frame-ancestors 'none'; "
         + "img-src 'self'; "
         + "object-src 'none'; "
-        + "script-src 'self'; "
+        + "script-src 'self' https://static.cloudflareinsights.com; "
         + "script-src-attr 'none'; "
         + "style-src 'self' https://fonts.googleapis.com; "
         + "style-src-attr 'none'";

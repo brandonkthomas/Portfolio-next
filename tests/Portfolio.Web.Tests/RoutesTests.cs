@@ -74,7 +74,9 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
         Assert.Equal(TimeSpan.Zero, response.Headers.CacheControl?.MaxAge);
         Assert.Equal("no-store", GetHeader(response, "Cloudflare-CDN-Cache-Control"));
         Assert.Contains("default-src 'self'", GetHeader(response, "Content-Security-Policy"), StringComparison.Ordinal);
-        Assert.Contains("script-src 'self'", GetHeader(response, "Content-Security-Policy"), StringComparison.Ordinal);
+        Assert.Contains("script-src 'self' https://static.cloudflareinsights.com;", GetHeader(response, "Content-Security-Policy"), StringComparison.Ordinal);
+        Assert.Contains("connect-src 'self' https://cloudflareinsights.com;", GetHeader(response, "Content-Security-Policy"), StringComparison.Ordinal);
+        Assert.Contains("script-src-attr 'none'", GetHeader(response, "Content-Security-Policy"), StringComparison.Ordinal);
         Assert.Equal("strict-origin-when-cross-origin", GetHeader(response, "Referrer-Policy"));
         Assert.Equal("DENY", GetHeader(response, "X-Frame-Options"));
         Assert.Equal("nosniff", GetHeader(response, "X-Content-Type-Options"));

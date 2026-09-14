@@ -328,6 +328,9 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Contains("<h1>Page not found</h1>", html, StringComparison.Ordinal);
+        Assert.Matches("<link rel=\"stylesheet\" href=\"/css/portfolio\\.[^\"]+\\.css\">", html);
+        Assert.Matches("<script src=\"/assets/js/theme\\.[^\"]+\\.js\"></script>", html);
+        Assert.Contains("class=\"status-logo\"", html, StringComparison.Ordinal);
         Assert.Equal("no-store", GetHeader(response, "Cache-Control"));
         Assert.Equal("no-store", GetHeader(response, "Cloudflare-CDN-Cache-Control"));
         Assert.Contains("default-src 'self'", GetHeader(response, "Content-Security-Policy"), StringComparison.Ordinal);

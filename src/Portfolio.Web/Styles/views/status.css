@@ -1,0 +1,28 @@
+/* Standalone not-found and error pages: logo, heading, and a link home, centered like the maintenance page */
+
+main.status-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    min-block-size: 100svh;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+img.status-logo {
+    display: block;
+    inline-size: 5rem;
+    block-size: 5rem;
+    filter: var(--icon-filter);
+}
+
+main.status-page h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+main.status-page p {
+    margin: 0;
+}

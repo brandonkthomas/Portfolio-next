@@ -1,5 +1,6 @@
 @page "/error/{statusCode:int?}"
 @model ErrorModel
+@* Standalone status page: no portfolio shell or enhanced navigation, but the site theme and stylesheet *@
 @{
     Layout = null;
 }
@@ -8,13 +9,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <meta name="robots" content="noindex">
     <title>@Model.Title | brandonthomas.net</title>
+    <script src="~/assets/js/theme.js"></script>
+    <link rel="stylesheet" href="~/css/portfolio.css">
+    <link rel="icon" href="~/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="~/apple-touch-icon.png">
 </head>
 <body>
-    <main>
+    <main class="status-page">
+        <img class="status-logo" src="~/assets/svg/bt-logo-boxed.svg" width="80" height="80" alt="brandonthomas.net">
         <h1>@Model.Title</h1>
-        <p>@Model.Message</p>
         <p><a href="/">Return home</a></p>
     </main>
 </body>

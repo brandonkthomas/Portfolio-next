@@ -10,7 +10,7 @@
   <h3 align="center">Portfolio-next</h3>
 
   <p align="center">
-    Responsive, minimal portfolio site w/ interactive , project showcase, photo gallery & contact links.
+    Responsive, minimal portfolio site w/ personal work history, project showcase, photo gallery & contact links.
     <br />
     <a href="https://brandonthomas.net">View Demo</a>
     <br />

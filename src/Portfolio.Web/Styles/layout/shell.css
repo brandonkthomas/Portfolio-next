@@ -70,7 +70,7 @@ aside.portfolio-sidebar::after {
 aside.portfolio-sidebar::before {
     background: linear-gradient(
         to bottom,
-        color-mix(in srgb, var(--bg-primary) 80%, transparent),
+        color-mix(in srgb, var(--bg-primary) 100%, transparent),
         color-mix(in srgb, var(--bg-primary) 40%, transparent) 65%,
         transparent);
     -webkit-backdrop-filter: blur(4px);

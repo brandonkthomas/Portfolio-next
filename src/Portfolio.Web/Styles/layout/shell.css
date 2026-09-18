@@ -46,8 +46,54 @@ aside.portfolio-sidebar {
     z-index: 2;
     inset-block-start: 0;
     padding: 1rem;
-    border-block-end: 1px solid var(--border-color);
-    background: var(--bg-primary);
+    border-block-end: 1px solid transparent;
+    background-color: transparent;
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease;
+}
+
+/* Mobile progressive blur: two stacked backdrop layers extend past the sidebar's bottom edge. Each is masked so
+   blur strength and tint ramp down to nothing, instead of ending on a hard line. Both sit below the sidebar's
+   content (the sidebar's z-index makes it the stacking context), including the absolutely positioned menu panel. */
+aside.portfolio-sidebar::before,
+aside.portfolio-sidebar::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0 0 -1.5rem;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+/* Light blur and tint across the full fade */
+aside.portfolio-sidebar::before {
+    background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--bg-primary) 80%, transparent),
+        color-mix(in srgb, var(--bg-primary) 40%, transparent) 65%,
+        transparent);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    mask-image: linear-gradient(to bottom, black 50%, transparent);
+}
+
+/* Heavy blur concentrated behind the heading */
+aside.portfolio-sidebar::after {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    mask-image: linear-gradient(to bottom, black 35%, transparent 70%);
+}
+
+/* Open menu: snap back to the solid sidebar background */
+aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"]) {
+    border-block-end-color: var(--border-color);
+    background-color: var(--bg-primary);
+}
+
+aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"])::before,
+aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"])::after {
+    opacity: 0;
 }
 
 /* ================================================================= */
@@ -287,6 +333,12 @@ main.portfolio-main:focus {
         inline-size: var(--portfolio-sidebar-width);
         padding: 2rem;
         border: 0;
+        background-color: var(--bg-primary);
+    }
+
+    aside.portfolio-sidebar::before,
+    aside.portfolio-sidebar::after {
+        display: none;
     }
 
     div.sidebar-heading {
@@ -353,6 +405,9 @@ main.portfolio-main:focus {
 @media (prefers-reduced-motion: reduce) {
     body,
     main.portfolio-main,
+    aside.portfolio-sidebar,
+    aside.portfolio-sidebar::before,
+    aside.portfolio-sidebar::after,
     div.portfolio-navigation,
     aside.portfolio-sidebar a,
     span.menu-icon::before,

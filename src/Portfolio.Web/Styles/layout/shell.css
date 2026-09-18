@@ -66,25 +66,26 @@ aside.portfolio-sidebar::after {
     transition: opacity 0.18s ease;
 }
 
-/* Light blur and tint across the full fade. The tint starts fully opaque so the top edge matches the page
-   background that Safari samples for its toolbar. */
+/* Heavy blur concentrated behind the heading */
 aside.portfolio-sidebar::before {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    mask-image: linear-gradient(to bottom, black 35%, transparent 70%);
+}
+
+/* Light blur and tint across the full fade, painted above the heavy blur so the tint is never covered by blurred
+   content. The tint is solid through the top padding so the edge matches the page background Safari samples for
+   its toolbar, then mixes out. */
+aside.portfolio-sidebar::after {
     background: linear-gradient(
         to bottom,
-        var(--bg-primary),
-        color-mix(in srgb, var(--bg-primary) 75%, transparent) 40%,
-        color-mix(in srgb, var(--bg-primary) 30%, transparent) 70%,
+        var(--bg-primary) 1rem,
+        color-mix(in srgb, var(--bg-primary) 70%, transparent) 50%,
+        color-mix(in srgb, var(--bg-primary) 25%, transparent) 75%,
         transparent);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     mask-image: linear-gradient(to bottom, black 50%, transparent);
-}
-
-/* Heavy blur concentrated behind the heading */
-aside.portfolio-sidebar::after {
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    mask-image: linear-gradient(to bottom, black 35%, transparent 70%);
 }
 
 /* Open menu: snap back to the solid sidebar background */

@@ -66,12 +66,14 @@ aside.portfolio-sidebar::after {
     transition: opacity 0.18s ease;
 }
 
-/* Light blur and tint across the full fade */
+/* Light blur and tint across the full fade. The tint starts fully opaque so the top edge matches the page
+   background that Safari samples for its toolbar. */
 aside.portfolio-sidebar::before {
     background: linear-gradient(
         to bottom,
-        color-mix(in srgb, var(--bg-primary) 100%, transparent),
-        color-mix(in srgb, var(--bg-primary) 40%, transparent) 65%,
+        var(--bg-primary),
+        color-mix(in srgb, var(--bg-primary) 75%, transparent) 40%,
+        color-mix(in srgb, var(--bg-primary) 30%, transparent) 70%,
         transparent);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);

@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,10 +11,14 @@ using Portfolio.Web.Services;
 
 namespace Portfolio.Web.Tests;
 
-public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public sealed class RoutesTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory
-        .WithWebHostBuilder(builder =>
+    private readonly WebApplicationFactory<Program> _factory;
+    private readonly HttpClient _client;
+
+    public RoutesTests(WebApplicationFactory<Program> factory)
+    {
+        _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Production");
             builder.ConfigureAppConfiguration((_, configuration) =>
@@ -22,11 +27,12 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
                     ["PhotoCatalog:ManifestPath"] = Path.Combine(
                         AppContext.BaseDirectory, "Fixtures", "empty-photos.v1.json")
                 }));
-        })
-        .CreateClient(new WebApplicationFactoryClientOptions
+        });
+        _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false
         });
+    }
 
     [Fact]
     public async Task Shared_stylesheet_is_served_as_a_static_asset()
@@ -139,27 +145,37 @@ public sealed class RoutesTests(WebApplicationFactory<Program> factory) : IClass
     [Fact]
     public async Task Projects_render_fingerprinted_catalog_icons()
     {
+        var projects = _factory.Services.GetRequiredService<IProjectCatalog>().Projects;
         using var response = await _client.GetAsync("/projects");
         var html = await response.Content.ReadAsStringAsync();
 
-        var webAmpIcon = Regex.Match(
-            html,
-            "<img class=\"project-icon\"\\s+src=\"(?<path>/assets/webp/projects/webamp\\.[^\"]+\\.webp)\"");
-        Assert.True(webAmpIcon.Success, "The projects page did not reference a fingerprinted WebAmp icon.");
-        Assert.Matches(
-            "<img class=\"project-icon monochrome-icon\"\\s+src=\"/assets/svg/bt-logo-boxed\\.[^\"]+\\.svg\"",
-            html);
-        Assert.Matches(
-            "<img class=\"project-icon\"\\s+src=\"/assets/webp/projects/swift-bible\\.[^\"]+\\.webp\"",
-            html);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        // Projects without catalog artwork share one fingerprinted placeholder icon.
-        var placeholderPattern = "<img class=\"project-icon\" src=\"/assets/svg/project-placeholder\\.[^\"]+\\.svg\"";
-        Assert.Equal(4, Regex.Matches(html, placeholderPattern).Count);
+        // The page renders exactly one icon per catalog project, in catalog order.
+        var icons = Regex.Matches(html, "<img class=\"(?<class>project-icon[^\"]*)\"\\s+src=\"(?<src>[^\"]+)\"");
+        Assert.Equal(projects.Count, icons.Count);
 
-        using var iconResponse = await _client.GetAsync(webAmpIcon.Groups["path"].Value);
-        Assert.Equal(HttpStatusCode.OK, iconResponse.StatusCode);
-        Assert.Equal("image/webp", iconResponse.Content.Headers.ContentType?.MediaType);
+        var contentTypes = new FileExtensionContentTypeProvider();
+        foreach (var (project, icon) in projects.Zip(icons))
+        {
+            // Projects without catalog artwork share one placeholder icon.
+            var sourcePath = project.Icon?.Path ?? "/assets/svg/project-placeholder.svg";
+            var expectedClass = project.Icon?.InvertInDarkTheme == true ? "project-icon monochrome-icon" : "project-icon";
+            var extension = Path.GetExtension(sourcePath);
+            var fingerprintPattern =
+                $"^{Regex.Escape(sourcePath[..^extension.Length])}\\.[^./\"]+{Regex.Escape(extension)}$";
+            var src = icon.Groups["src"].Value;
+
+            Assert.Equal(expectedClass, icon.Groups["class"].Value);
+            Assert.Matches(fingerprintPattern, src);
+
+            using var iconResponse = await _client.GetAsync(src);
+            Assert.True(
+                contentTypes.TryGetContentType(sourcePath, out var expectedContentType),
+                $"No content type is registered for {project.Slug}'s icon extension '{extension}'.");
+            Assert.Equal(HttpStatusCode.OK, iconResponse.StatusCode);
+            Assert.Equal(expectedContentType, iconResponse.Content.Headers.ContentType?.MediaType);
+        }
     }
 
     [Fact]

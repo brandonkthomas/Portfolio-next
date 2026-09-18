@@ -39,14 +39,6 @@
       "sourceUrl": "https://github.com/brandonkthomas/WebAmp"
     },
     {
-      "slug": "localdrop",
-      "title": "LocalDrop",
-      "meta": "May 2026",
-      "summary": "A peer-to-peer local file transfer interface webapp utilizing QR codes.",
-      "order": 30,
-      "tags": ["TypeScript"]
-    },
-    {
       "slug": "spectrometer",
       "title": "Spectrometer",
       "icon": {

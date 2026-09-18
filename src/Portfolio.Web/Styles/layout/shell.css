@@ -48,9 +48,6 @@ aside.portfolio-sidebar {
     padding: 1rem;
     border-block-end: 1px solid transparent;
     background-color: transparent;
-    transition:
-        background-color 0.18s ease,
-        border-color 0.18s ease;
 }
 
 /* Mobile progressive blur: two stacked backdrop layers extend past the sidebar's bottom edge. Each is masked so
@@ -63,7 +60,6 @@ aside.portfolio-sidebar::after {
     z-index: -1;
     inset: 0 0 -1.5rem;
     pointer-events: none;
-    transition: opacity 0.18s ease;
 }
 
 /* Heavy blur concentrated behind the heading */
@@ -79,16 +75,18 @@ aside.portfolio-sidebar::before {
 aside.portfolio-sidebar::after {
     background: linear-gradient(
         to bottom,
-        var(--bg-primary) 1rem,
-        color-mix(in srgb, var(--bg-primary) 70%, transparent) 50%,
-        color-mix(in srgb, var(--bg-primary) 25%, transparent) 75%,
+        var(--bg-primary) 0.25rem,
+        color-mix(in srgb,var(--bg-primary) 40%,transparent) 50%,
+        color-mix(in srgb,var(--bg-primary) 25%,transparent) 75%,
         transparent);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     mask-image: linear-gradient(to bottom, black 50%, transparent);
 }
 
-/* Open menu: snap back to the solid sidebar background */
+/* Open menu: snap back to the solid sidebar background. Deliberately not transitioned: WebKit drops the backdrop
+   blur while a backdrop-filter layer's opacity animates, and the crossfade against the fading-in background leaves
+   both partially transparent, so the page content flashes through the sidebar. */
 aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"]) {
     border-block-end-color: var(--border-color);
     background-color: var(--bg-primary);
@@ -96,7 +94,7 @@ aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"]) {
 
 aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"])::before,
 aside.portfolio-sidebar:has(div.portfolio-navigation[data-open="true"])::after {
-    opacity: 0;
+    display: none;
 }
 
 /* ================================================================= */
@@ -408,9 +406,6 @@ main.portfolio-main:focus {
 @media (prefers-reduced-motion: reduce) {
     body,
     main.portfolio-main,
-    aside.portfolio-sidebar,
-    aside.portfolio-sidebar::before,
-    aside.portfolio-sidebar::after,
     div.portfolio-navigation,
     aside.portfolio-sidebar a,
     span.menu-icon::before,

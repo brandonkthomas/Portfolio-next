@@ -20,7 +20,7 @@
       "icon": {
         "path": "/assets/webp/projects/swift-bible.webp"
       },
-      "meta": "Jun 2026",
+      "meta": "Jun-Oct 2026",
       "summary": "A native Bible reader app for iPhone with highlights, notes, themes, and search.",
       "order": 20,
       "tags": ["Swift", "SwiftUI"],
@@ -33,9 +33,9 @@
         "path": "/assets/webp/projects/homeplus.webp"
       },
       "meta": "Jun 2026",
-      "summary": "A native HomeKit controller for iPhone.",
+      "summary": "A native HomeKit controller for iPhone. First Swift project; unfinished.",
       "order": 22,
-      "tags": ["Swift", "SwiftUI", "HomeKit"],
+      "tags": ["Swift", "SwiftUI"],
       "sourceUrl": "https://github.com/brandonkthomas/HomePlus"
     },
     {

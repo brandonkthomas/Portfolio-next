@@ -27,6 +27,18 @@
       "sourceUrl": "https://github.com/brandonkthomas/SwiftBible"
     },
     {
+      "slug": "homeplus",
+      "title": "HomePlus",
+      "icon": {
+        "path": "/assets/webp/projects/homeplus.webp"
+      },
+      "meta": "Jun 2026",
+      "summary": "A native HomeKit controller for iPhone.",
+      "order": 22,
+      "tags": ["Swift", "SwiftUI", "HomeKit"],
+      "sourceUrl": "https://github.com/brandonkthomas/HomePlus"
+    },
+    {
       "slug": "webamp",
       "title": "WebAmp",
       "icon": {
@@ -58,22 +70,13 @@
       ]
     },
     {
-      "slug": "image-hex-editor",
-      "title": "Image Hex Editor",
-      "meta": "Dec 2025",
-      "summary": "A webapp for inspecting and editing image bytes as hexadecimal data.",
+      "slug": "bulk-file-organizer",
+      "title": "BulkFileOrganizer",
+      "meta": "Feb 2026",
+      "summary": "A high-performance CLI for bulk copying and moving files into organized buckets.",
       "order": 50,
-      "tags": ["TypeScript"],
-      "sourceUrl": "https://github.com/brandonkthomas/ImageHexEditor"
-    },
-    {
-      "slug": "name-trace",
-      "title": "NameTrace",
-      "meta": "Dec 2025",
-      "summary": "A reverse phone lookup webapp.",
-      "order": 60,
-      "tags": [".NET Core", "TypeScript"],
-      "sourceUrl": "https://github.com/brandonkthomas/NameTrace"
+      "tags": ["C#", "CLI"],
+      "sourceUrl": "https://github.com/brandonkthomas/BulkFileOrganizer"
     },
     {
       "slug": "deployment-scripts",

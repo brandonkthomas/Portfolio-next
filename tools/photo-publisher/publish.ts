@@ -176,7 +176,7 @@ function validateSourceEntry(
   return value as SourceEntry;
 }
 
-/** Produces responsive JPEG and WebP variants while removing source metadata. */
+/** Produces responsive JPEG and WebP variants; sharp omits EXIF/XMP/IPTC/ICC unless keepMetadata() is called. */
 async function buildEntry(
   source: SourceEntry,
   sourcePath: string,
@@ -283,6 +283,10 @@ async function verifyPublication(manifest: PhotoManifest, outputRoot: string): P
           || `image/${metadata.format}` !== variant.mediaType
           || await hashFile(path).then((hash) => hash.slice(0, 12)) !== match[2]) {
         throw new Error(`Generated variant '${variant.url}' failed file verification.`);
+      }
+      if (metadata.exif !== undefined || metadata.xmp !== undefined || metadata.iptc !== undefined
+          || metadata.icc !== undefined || metadata.orientation !== undefined) {
+        throw new Error(`Generated variant '${variant.url}' still carries source metadata.`);
       }
       seenUrls.add(variant.url);
     }

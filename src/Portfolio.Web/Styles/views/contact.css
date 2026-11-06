@@ -1,0 +1,53 @@
+/* Contact view: heading and email button centered in the content region */
+
+main.portfolio-main[data-portfolio-view="contact"] {
+    /* Mobile: sticky header (~3.6rem) + 2rem block padding on each side, rounded up so the page never scrolls */
+    --contact-chrome-block-size: 8rem;
+}
+
+@media (min-width: 68rem) {
+    main.portfolio-main[data-portfolio-view="contact"] {
+        /* Desktop: sidebar is fixed beside main, which keeps 5rem block padding */
+        --contact-chrome-block-size: 10rem;
+    }
+}
+
+section.contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    /* Fills the viewport less the sticky mobile header and main's block padding, centering the content */
+    min-block-size: calc(100svh - var(--contact-chrome-block-size));
+    text-align: center;
+}
+
+section.contact h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* Pill matching the lightbox controls */
+a.contact-button {
+    display: inline-flex;
+    align-items: center;
+    block-size: 3rem;
+    padding: 0 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+    text-decoration: none;
+    transition: scale 0.2s ease, border-color 0.2s ease;
+}
+
+@media (hover: hover) {
+    a.contact-button:hover {
+        border-color: var(--text-muted);
+        scale: 1.02;
+    }
+}
+
+a.contact-button:active {
+    scale: 0.98;
+}

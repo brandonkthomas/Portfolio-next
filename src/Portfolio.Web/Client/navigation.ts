@@ -330,8 +330,9 @@ function getNavigationState(source: Document): ReadonlyMap<string, NavigationLin
         });
     });
 
-    if (states.size === 0 || activeLinkCount !== 1) {
-        throw new Error("The portfolio response must have one active navigation link.");
+    // Unlisted views (such as /contact) render the shell with no active link
+    if (states.size === 0 || activeLinkCount > 1) {
+        throw new Error("The portfolio response must have at most one active navigation link.");
     }
 
     return states;
@@ -374,8 +375,12 @@ async function fetchPortfolioPage(
 
     validateMetadata(nextDocument);
     const navigationState = getNavigationState(nextDocument);
-    if (navigationState.get(nextMain.dataset.portfolioView)?.ariaCurrent !== "page") {
-        throw new Error("The portfolio response view does not match its active navigation link.");
+    // A listed view must be the active link; an unlisted view must leave every link inactive
+    const nextView = nextMain.dataset.portfolioView;
+    for (const [key, state] of navigationState) {
+        if ((state.ariaCurrent === "page") !== (key === nextView)) {
+            throw new Error("The portfolio response view does not match its active navigation link.");
+        }
     }
 
     if (requestedUrl.hash) {

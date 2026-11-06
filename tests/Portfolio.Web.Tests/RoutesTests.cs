@@ -69,6 +69,8 @@ public sealed class RoutesTests : IClassFixture<WebApplicationFactory<Program>>
     [InlineData("/projects/")]
     [InlineData("/photos")]
     [InlineData("/photos/")]
+    [InlineData("/contact")]
+    [InlineData("/contact/swiftbible")]
     public async Task Portfolio_document_is_revalidated_and_has_the_security_policy(string path)
     {
         using var response = await _client.GetAsync(path);
@@ -179,6 +181,44 @@ public sealed class RoutesTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Contact_is_unlisted_and_opens_a_plain_email()
+    {
+        using var response = await _client.GetAsync("/contact");
+        var html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("data-portfolio-view=\"contact\"", html, StringComparison.Ordinal);
+        Assert.Contains("Questions, comments, feedback?", html, StringComparison.Ordinal);
+        Assert.Contains("<a class=\"contact-button\" href=\"mailto:me@brandonthomas.net\">", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("aria-current=\"page\"", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("href=\"/contact\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Contact_swiftbible_prefills_a_feedback_email_with_the_same_page()
+    {
+        var plain = await _client.GetStringAsync("/contact");
+        var html = await _client.GetStringAsync("/contact/swiftbible");
+        var href = WebUtility.HtmlDecode(
+            Regex.Match(html, "<a class=\"contact-button\" href=\"(?<href>[^\"]+)\">").Groups["href"].Value);
+
+        Assert.StartsWith("mailto:me@brandonthomas.net?subject=SwiftBible%20Feedback&body=", href, StringComparison.Ordinal);
+        Assert.Contains("%0D%0A", href, StringComparison.Ordinal);
+        Assert.Contains("<link rel=\"canonical\" href=\"https://brandonthomas.net/contact\">", html, StringComparison.Ordinal);
+        Assert.Equal(
+            Regex.Replace(plain, "href=\"mailto:[^\"]+\"", ""),
+            Regex.Replace(html, "href=\"mailto:[^\"]+\"", ""));
+    }
+
+    [Fact]
+    public async Task Contact_unknown_topic_is_not_found()
+    {
+        using var response = await _client.GetAsync("/contact/not-a-topic");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Portfolio_document_links_fingerprinted_favicons()
     {
         using var response = await _client.GetAsync("/");
@@ -255,6 +295,7 @@ public sealed class RoutesTests : IClassFixture<WebApplicationFactory<Program>>
     [InlineData("/")]
     [InlineData("/projects")]
     [InlineData("/photos")]
+    [InlineData("/contact")]
     public async Task Rendered_text_stays_within_the_font_subset(string path)
     {
         var html = WebUtility.HtmlDecode(await _client.GetStringAsync(path));

@@ -1,0 +1,8 @@
+@page "/contact/{topic?}"
+@model ContactModel
+@* Unlisted contact page: not in the sidebar navigation, reachable by route only *@
+
+<section class="contact" aria-labelledby="contact-heading">
+    <h1 id="contact-heading">Questions, comments, feedback?</h1>
+    <a class="contact-button" href="@Model.MailtoUrl">@ContactModel.EmailAddress</a>
+</section>

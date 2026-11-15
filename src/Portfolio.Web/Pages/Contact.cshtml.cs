@@ -11,13 +11,14 @@ namespace Portfolio.Web.Pages;
 /// <param name="options">Provides the public origin used for canonical URLs.</param>
 public sealed class ContactModel(IOptions<PortfolioOptions> options) : PortfolioPageModel(options)
 {
-    public const string EmailAddress = "me@brandonthomas.net";
+    public const string DefaultEmailAddress = "me@brandonthomas.net";
 
     /// <summary>Email templates keyed by the route topic segment.</summary>
-    private static readonly Dictionary<string, (string Subject, string Body)> Templates =
+    private static readonly Dictionary<string, (string Address, string Subject, string Body)> Templates =
         new(StringComparer.OrdinalIgnoreCase)
         {
             ["swiftbible"] = (
+                "feedback@brandonthomas.net",
                 "SwiftBible Feedback",
                 """
                 Feedback type (bug, feature request, other):
@@ -39,8 +40,11 @@ public sealed class ContactModel(IOptions<PortfolioOptions> options) : Portfolio
                 """)
         };
 
+    /// <summary>Gets the address the email button shows and sends to.</summary>
+    public string EmailAddress { get; private set; } = DefaultEmailAddress;
+
     /// <summary>Gets the mailto URL the email button opens.</summary>
-    public string MailtoUrl { get; private set; } = $"mailto:{EmailAddress}";
+    public string MailtoUrl { get; private set; } = $"mailto:{DefaultEmailAddress}";
 
     /// <summary>Prepares metadata and, for a known topic, a pre-filled email template.</summary>
     public IActionResult OnGet(string? topic)
@@ -53,6 +57,7 @@ public sealed class ContactModel(IOptions<PortfolioOptions> options) : Portfolio
             }
 
             // RFC 6068: line breaks in a mailto body are percent-encoded CRLF
+            EmailAddress = template.Address;
             var body = template.Body.ReplaceLineEndings("\r\n");
             MailtoUrl = $"mailto:{EmailAddress}?subject={Uri.EscapeDataString(template.Subject)}&body={Uri.EscapeDataString(body)}";
         }

@@ -202,12 +202,13 @@ public sealed class RoutesTests : IClassFixture<WebApplicationFactory<Program>>
         var href = WebUtility.HtmlDecode(
             Regex.Match(html, "<a class=\"contact-button\" href=\"(?<href>[^\"]+)\">").Groups["href"].Value);
 
-        Assert.StartsWith("mailto:me@brandonthomas.net?subject=SwiftBible%20Feedback&body=", href, StringComparison.Ordinal);
+        Assert.StartsWith("mailto:feedback@brandonthomas.net?subject=SwiftBible%20Feedback&body=", href, StringComparison.Ordinal);
         Assert.Contains("%0D%0A", href, StringComparison.Ordinal);
         Assert.Contains("<link rel=\"canonical\" href=\"https://brandonthomas.net/contact\">", html, StringComparison.Ordinal);
+        Assert.Contains(">feedback@brandonthomas.net</a>", html, StringComparison.Ordinal);
         Assert.Equal(
-            Regex.Replace(plain, "href=\"mailto:[^\"]+\"", ""),
-            Regex.Replace(html, "href=\"mailto:[^\"]+\"", ""));
+            Regex.Replace(plain, "<a class=\"contact-button\"[^>]*>[^<]*</a>", ""),
+            Regex.Replace(html, "<a class=\"contact-button\"[^>]*>[^<]*</a>", ""));
     }
 
     [Fact]
